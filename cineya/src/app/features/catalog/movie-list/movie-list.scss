@@ -1,0 +1,35 @@
+    .movie-detail {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+.movie-detail img {
+  width: 280px;
+  max-width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--radio);
+}
+
+.info {
+  flex: 1;
+}
+.info h1 {
+  margin-bottom: 0.25rem;
+}
+.duracion {
+  margin: 0 0 0.75rem;
+  color: var(--color-texto-suave);
+}
+.genres {
+  margin: 0 0 1rem;
+}
+.sinopsis {
+  max-width: 65ch;
+}
+
+@media (max-width: 640px) {
+  .movie-detail {
+    flex-direction: column;
+  }
+}

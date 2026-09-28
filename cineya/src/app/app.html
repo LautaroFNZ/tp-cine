@@ -1,10 +1,38 @@
 <header class="barra">
-  <a routerLink="/">Cartelera</a>
+  <a routerLink="/" class="marca">Cine<span>Ya</span></a>
 
   <nav>
     @if (auth.estaAutenticado()) {
-      <span>Hola, {{ auth.perfil()?.nombre }}</span>
-      <button type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+      @if (auth.esAdmin()) {
+        <a routerLink="/admin">Administración</a>
+      }
+      @if (auth.esEmpleado() || auth.esAdmin()) {
+        <a routerLink="/empleado">Empleados</a>
+      }
+
+      <div class="menu-usuario">
+        <button type="button"
+                class="avatar"
+                aria-label="Menú de usuario"
+                aria-haspopup="menu"
+                [attr.aria-expanded]="menuAbierto()"
+                (click)="alternarMenu()">
+          {{ iniciales() }}
+        </button>
+
+        @if (menuAbierto()) {
+          <button type="button" class="fondo-menu" aria-label="Cerrar menú" (click)="cerrarMenu()"></button>
+
+          <div class="menu-desplegable" role="menu">
+            <div class="menu-cabecera">
+              <strong>Hola, {{ auth.perfil()?.nombre || 'usuario' }}</strong>
+              <span>{{ auth.perfil()?.email }}</span>
+            </div>
+            <button type="button" role="menuitem" (click)="irAConfiguracion()">Configuración</button>
+            <button type="button" role="menuitem" (click)="cerrarSesion()">Cerrar sesión</button>
+          </div>
+        }
+      </div>
     } @else {
       <a routerLink="/login">Ingresar</a>
       <a routerLink="/registro">Registrarme</a>
@@ -12,4 +40,6 @@
   </nav>
 </header>
 
-<router-outlet />
+<main class="contenido">
+  <router-outlet />
+</main>

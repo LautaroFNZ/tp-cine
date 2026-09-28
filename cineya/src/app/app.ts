@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/services/auth';
 
@@ -9,9 +9,35 @@ import { AuthService } from './core/services/auth';
   styleUrl: './app.scss'
 })
 export class App {
-  constructor(public auth: AuthService, private router: Router) {}
+  auth = inject(AuthService);
+  private router = inject(Router);
+
+  menuAbierto = signal(false);
+
+  // Primera letra del nombre + primera del apellido; si faltan, la inicial del email
+  iniciales = computed(() => {
+    const perfil = this.auth.perfil();
+    const primera = perfil?.nombre?.trim().charAt(0) ?? '';
+    const segunda = perfil?.apellido?.trim().charAt(0) ?? '';
+    const resultado = (primera + segunda).toUpperCase();
+    return resultado || (perfil?.email.charAt(0).toUpperCase() ?? '?');
+  });
+
+  alternarMenu() {
+    this.menuAbierto.update(abierto => !abierto);
+  }
+
+  cerrarMenu() {
+    this.menuAbierto.set(false);
+  }
+
+  async irAConfiguracion() {
+    this.cerrarMenu();
+    await this.router.navigateByUrl('/configuracion');
+  }
 
   async cerrarSesion() {
+    this.cerrarMenu();
     await this.auth.cerrarSesion();
     await this.router.navigateByUrl('/');
   }

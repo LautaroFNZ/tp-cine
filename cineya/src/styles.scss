@@ -1,1 +1,113 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-fondo: #0f1115;
+  --color-superficie: #181b22;
+  --color-borde: #2a2f3a;
+  --color-texto: #f2f2f2;
+  --color-texto-suave: #9aa0ab;
+  --color-acento: #ffb020;
+  --color-acento-texto: #1a1300;
+  --color-error: #ff6b6b;
+  --color-exito: #4cd08a;
+  --radio: 10px;
+  color-scheme: dark;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+}
+
+a {
+  color: var(--color-acento);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin: 0 0 1rem;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  font: inherit;
+}
+input:focus,
+select:focus {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 1px;
+}
+
+button {
+  padding: 0.6rem 1.1rem;
+  background: var(--color-acento);
+  color: var(--color-acento-texto);
+  border: 0;
+  border-radius: var(--radio);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error {
+  color: var(--color-error);
+  font-size: 0.875rem;
+  margin: 0.25rem 0 0;
+}
+
+/* Géneros como etiquetas (cartelera y detalle) */
+.genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.tag {
+  background: rgba(255, 176, 32, 0.12);
+  color: var(--color-acento);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.75rem;
+}
+
+/* Tarjeta reutilizable para formularios (login, registro y los que vengan) */
+.formulario-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  padding: 1.5rem;
+}
+.formulario-tarjeta label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+}
+.formulario-tarjeta .error {
+  margin: -0.5rem 0 0;
+}
