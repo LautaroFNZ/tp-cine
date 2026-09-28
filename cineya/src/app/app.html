@@ -1,1 +1,15 @@
+<header class="barra">
+  <a routerLink="/">Cartelera</a>
+
+  <nav>
+    @if (auth.estaAutenticado()) {
+      <span>Hola, {{ auth.perfil()?.nombre }}</span>
+      <button type="button" (click)="cerrarSesion()">Cerrar sesión</button>
+    } @else {
+      <a routerLink="/login">Ingresar</a>
+      <a routerLink="/registro">Registrarme</a>
+    }
+  </nav>
+</header>
+
 <router-outlet />

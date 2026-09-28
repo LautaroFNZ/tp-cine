@@ -1,0 +1,80 @@
+<h1>Crear cuenta</h1>
+
+<ng-template #errores let-campo="campo">
+  @if (campo.touched() && campo.invalid()) {
+    @for (error of campo.errors(); track error) {
+      <p class="error">{{ error.message }}</p>
+    }
+  }
+</ng-template>
+
+<form novalidate (submit)="alEnviar($event)">
+  <label>
+    Nombre
+    <input type="text" [formField]="formulario.nombre">
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.nombre() }" />
+
+  <label>
+    Apellido
+    <input type="text" [formField]="formulario.apellido">
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.apellido() }" />
+
+  <label>
+    Email
+    <input type="email" [formField]="formulario.email">
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.email() }" />
+
+  <label>
+    Contraseña
+    <input type="password" [formField]="formulario.password">
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.password() }" />
+
+  <label>
+    Fecha de nacimiento
+    <input type="date" [formField]="formulario.fechaNacimiento">
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.fechaNacimiento() }" />
+
+  <label>
+    Tipo de sangre
+    <select [formField]="formulario.tipoSangre">
+      <option value="">Seleccioná...</option>
+      @for (tipo of tiposSangre; track tipo) {
+        <option [value]="tipo">{{ tipo }}</option>
+      }
+    </select>
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.tipoSangre() }" />
+
+  <label>
+    Color de ojos
+    <select [formField]="formulario.colorOjos">
+      <option value="">Seleccioná...</option>
+      @for (color of coloresOjos; track color) {
+        <option [value]="color">{{ color }}</option>
+      }
+    </select>
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.colorOjos() }" />
+
+  <label>
+    Días de vacaciones por año
+    <input type="number" [formField]="formulario.diasVacaciones">
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.diasVacaciones() }" />
+
+  @if (mensajeError()) {
+    <p class="error">{{ mensajeError() }}</p>
+  }
+  @if (mensajeInfo()) {
+    <p class="info">{{ mensajeInfo() }}</p>
+  }
+
+  <button type="submit" [disabled]="enviando()">Registrarme</button>
+</form>
+
+<p>¿Ya tenés cuenta? <a routerLink="/login">Ingresá</a></p>

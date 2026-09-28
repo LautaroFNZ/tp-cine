@@ -1,12 +1,18 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { AuthService } from './core/services/auth';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('cineya');
+  constructor(public auth: AuthService, private router: Router) {}
+
+  async cerrarSesion() {
+    await this.auth.cerrarSesion();
+    await this.router.navigateByUrl('/');
+  }
 }

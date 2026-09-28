@@ -1,0 +1,31 @@
+<h1>Iniciar sesión</h1>
+
+<ng-template #errores let-campo="campo">
+  @if (campo.touched() && campo.invalid()) {
+    @for (error of campo.errors(); track error) {
+      <p class="error">{{ error.message }}</p>
+    }
+  }
+</ng-template>
+
+<form novalidate (submit)="alEnviar($event)">
+  <label>
+    Email
+    <input type="email" [formField]="formulario.email">
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.email() }" />
+
+  <label>
+    Contraseña
+    <input type="password" [formField]="formulario.password">
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.password() }" />
+
+  @if (mensajeError()) {
+    <p class="error">{{ mensajeError() }}</p>
+  }
+
+  <button type="submit" [disabled]="enviando()">Ingresar</button>
+</form>
+
+<p>¿No tenés cuenta? <a routerLink="/registro">Registrate</a></p>
