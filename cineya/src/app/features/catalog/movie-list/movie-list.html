@@ -1,0 +1,24 @@
+@if (cargando()) {
+  <p>Cargando cartelera...</p>
+} @else if (mensajeError()) {
+  <p class="error">{{ mensajeError() }}</p>
+} @else if (peliculas().length === 0) {
+  <p>No hay películas cargadas todavía.</p>
+} @else {
+  <div class="movie-grid">
+    @for (pelicula of peliculas(); track pelicula.id) {
+      <article class="movie-card">
+        <img [src]="pelicula.imagenUrl" [alt]="pelicula.titulo">
+        <h3>{{ pelicula.titulo }}</h3>
+        <p>{{ pelicula.duracionMinutos }} min</p>
+        @if (pelicula.generos?.length) {
+          <p class="genres">
+            @for (genero of pelicula.generos; track genero.id) {
+              <span class="tag">{{ genero.nombre }}</span>
+            }
+          </p>
+        }
+      </article>
+    }
+  </div>
+}
