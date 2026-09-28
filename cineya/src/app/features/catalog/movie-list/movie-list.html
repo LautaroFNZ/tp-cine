@@ -38,15 +38,28 @@
         <a [routerLink]="['/pelicula', pelicula.id]" class="movie-card-link">
           <article class="movie-card">
             <img [src]="pelicula.imagenUrl" [alt]="pelicula.titulo">
-            <h3>{{ pelicula.titulo }}</h3>
-            <p>{{ pelicula.duracionMinutos }} min</p>
-            @if (pelicula.generos?.length) {
-              <p class="genres">
-                @for (genero of pelicula.generos; track genero.id) {
-                  <span class="tag">{{ genero.nombre }}</span>
+            <div class="movie-info">
+              <h3>{{ pelicula.titulo }}</h3>
+              <p class="duracion">{{ pelicula.duracionMinutos }} min</p>
+
+              <p class="calificacion">
+                @if (pelicula.promedio != null) {
+                  <span class="estrella">★</span>
+                  <strong>{{ pelicula.promedio | number: '1.1-1' }}</strong>
+                  <small>({{ pelicula.cantidadReviews }})</small>
+                } @else {
+                  <small>Sin reseñas</small>
                 }
               </p>
-            }
+
+              @if (pelicula.generos?.length) {
+                <p class="genres">
+                  @for (genero of pelicula.generos; track genero.id) {
+                    <span class="tag">{{ genero.nombre }}</span>
+                  }
+                </p>
+              }
+            </div>
           </article>
         </a>
       }

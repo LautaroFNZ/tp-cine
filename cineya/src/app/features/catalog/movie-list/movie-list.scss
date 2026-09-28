@@ -1,35 +1,120 @@
-    .movie-detail {
+.filtros {
   display: flex;
-  gap: 2rem;
-  margin-top: 1rem;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
-.movie-detail img {
-  width: 280px;
-  max-width: 100%;
+.filtros input {
+  max-width: 420px;
+}
+
+.generos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.generos button {
+  background: var(--color-superficie);
+  color: var(--color-texto-suave);
+  border: 1px solid var(--color-borde);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-weight: 500;
+}
+.generos button.activo {
+  background: var(--color-acento);
+  color: var(--color-acento-texto);
+  border-color: var(--color-acento);
+}
+
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.25rem;
+}
+
+.movie-card-link {
+  display: block;
+  height: 100%;
+  color: inherit;
+}
+.movie-card-link:hover {
+  text-decoration: none;
+}
+
+/* Un solo recuadro: la foto y la información forman una misma tarjeta */
+.movie-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.movie-card-link:hover .movie-card {
+  transform: translateY(-4px);
+  border-color: var(--color-acento);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+
+.movie-card img {
+  display: block;
+  width: 100%;
   aspect-ratio: 2 / 3;
   object-fit: cover;
-  border-radius: var(--radio);
 }
 
-.info {
+/* Información centrada debajo de la foto */
+.movie-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   flex: 1;
-}
-.info h1 {
-  margin-bottom: 0.25rem;
-}
-.duracion {
-  margin: 0 0 0.75rem;
-  color: var(--color-texto-suave);
-}
-.genres {
-  margin: 0 0 1rem;
-}
-.sinopsis {
-  max-width: 65ch;
+  gap: 0.35rem;
+  padding: 0.9rem 0.75rem 1rem;
+  border-top: 2px solid var(--color-acento);
+  text-align: center;
 }
 
-@media (max-width: 640px) {
-  .movie-detail {
-    flex-direction: column;
-  }
+/* Reserva el alto de dos líneas para que todas las tarjetas queden alineadas */
+.movie-info h3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-height: 2.6em;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.movie-info .duracion {
+  margin: 0;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+}
+
+/* Los géneros quedan siempre abajo, centrados */
+.movie-info .genres {
+  justify-content: center;
+  margin: auto 0 0;
+  padding-top: 0.4rem;
+}
+
+.movie-info .calificacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  margin: 0;
+  font-size: 0.85rem;
+}
+.calificacion .estrella {
+  color: var(--color-estrella);
+}
+.calificacion small {
+  color: var(--color-texto-suave);
 }

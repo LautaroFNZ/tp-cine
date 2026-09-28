@@ -18,7 +18,7 @@
   margin-bottom: 0.25rem;
 }
 .duracion {
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.5rem;
   color: var(--color-texto-suave);
 }
 .genres {
@@ -26,6 +26,119 @@
 }
 .sinopsis {
   max-width: 65ch;
+}
+
+.promedio {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+}
+.promedio .estrella {
+  font-size: 1.25rem;
+}
+.promedio small,
+.sin-datos {
+  color: var(--color-texto-suave);
+}
+
+/* Estrellas */
+.estrella {
+  color: var(--color-borde);
+}
+.estrella.llena {
+  color: var(--color-estrella);
+}
+
+.selector-estrellas {
+  display: flex;
+  gap: 0.15rem;
+}
+.selector-estrellas .estrella {
+  padding: 0 0.1rem;
+  background: transparent;
+  font-size: 1.9rem;
+  line-height: 1;
+  transition: color 0.12s, text-shadow 0.12s, transform 0.12s;
+}
+
+/* Estrella elegida: dorada con un leve brillo */
+.selector-estrellas .estrella.llena {
+  color: var(--color-estrella);
+  text-shadow: 0 0 10px rgba(255, 201, 60, 0.55);
+}
+
+/* Vista previa al pasar el cursor: mismo color, más apagado y sin brillo */
+.selector-estrellas .estrella.previa {
+  color: var(--color-estrella);
+  opacity: 0.45;
+}
+
+.selector-estrellas .estrella:hover {
+  transform: scale(1.12);
+}
+
+/* Reviews */
+.reviews {
+  max-width: 720px;
+  margin-top: 2.5rem;
+}
+.reviews h2 {
+  margin: 0 0 1rem;
+}
+.reviews .formulario-tarjeta {
+  margin-bottom: 1.5rem;
+}
+
+textarea {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  font: inherit;
+  resize: vertical;
+}
+textarea:focus {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 1px;
+}
+
+.exito {
+  color: var(--color-exito);
+  margin: 0;
+}
+.aviso {
+  color: var(--color-texto-suave);
+}
+
+.lista-reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lista-reviews li {
+  padding: 1rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+.review-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.review-cabecera small {
+  margin-left: auto;
+  color: var(--color-texto-suave);
+}
+.review-texto {
+  margin: 0.5rem 0 0;
 }
 
 @media (max-width: 640px) {

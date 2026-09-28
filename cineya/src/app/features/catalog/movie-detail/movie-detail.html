@@ -13,6 +13,16 @@
       <h1>{{ p.titulo }}</h1>
       <p class="duracion">{{ p.duracionMinutos }} min</p>
 
+      @if (promedio() !== null) {
+        <p class="promedio">
+          <span class="estrella llena">★</span>
+          <strong>{{ promedio() }}</strong>
+          <small>({{ reviews().length }} {{ reviews().length === 1 ? 'reseña' : 'reseñas' }})</small>
+        </p>
+      } @else {
+        <p class="promedio sin-datos">Todavía no hay reseñas</p>
+      }
+
       @if (p.generos?.length) {
         <p class="genres">
           @for (genero of p.generos; track genero.id) {
@@ -24,4 +34,77 @@
       <p class="sinopsis">{{ p.sinopsis }}</p>
     </div>
   </article>
+
+  <section class="reviews">
+    <h2>Reseñas</h2>
+
+    @if (auth.estaAutenticado()) {
+      <form class="formulario-tarjeta" novalidate (submit)="alEnviar($event)">
+        <strong>{{ miReview() ? 'Tu reseña' : 'Dejá tu reseña' }}</strong>
+
+          <div class="selector-estrellas"
+             role="group"
+             aria-label="Puntaje"
+             (mouseleave)="puntajePrevio.set(0)">
+          @for (n of estrellas; track n) {
+            <button type="button"
+                    class="estrella"
+                    [class.llena]="estadoEstrella(n) === 'llena'"
+                    [class.previa]="estadoEstrella(n) === 'previa'"
+                    [attr.aria-label]="n + (n === 1 ? ' estrella' : ' estrellas')"
+                    (mouseenter)="puntajePrevio.set(n)"
+                    (focus)="puntajePrevio.set(n)"
+                    (blur)="puntajePrevio.set(0)"
+                    (click)="elegirPuntaje(n)">★</button>
+          }
+        </div>
+
+        <label>
+          Comentario (opcional)
+          <textarea rows="3" [formField]="formulario.comentario"></textarea>
+        </label>
+        @if (formulario.comentario().touched() && formulario.comentario().invalid()) {
+          @for (error of formulario.comentario().errors(); track error) {
+            <p class="error">{{ error.message }}</p>
+          }
+        }
+
+        @if (mensajeError()) {
+          <p class="error">{{ mensajeError() }}</p>
+        }
+        @if (mensajeExito()) {
+          <p class="exito">{{ mensajeExito() }}</p>
+        }
+
+        <button type="submit" [disabled]="enviando()">
+          {{ miReview() ? 'Actualizar reseña' : 'Publicar reseña' }}
+        </button>
+      </form>
+    } @else {
+      <p class="aviso"><a routerLink="/login">Ingresá</a> para dejar tu reseña.</p>
+    }
+
+    @if (reviews().length === 0) {
+      <p class="aviso">Todavía no hay reseñas. ¡Sé el primero!</p>
+    } @else {
+      <ul class="lista-reviews">
+        @for (review of reviews(); track review.id) {
+          <li>
+            <div class="review-cabecera">
+              <strong>{{ review.autor }}</strong>
+              <span class="estrellas-fijas" [attr.aria-label]="review.puntaje + ' de 5'">
+                @for (n of estrellas; track n) {
+                  <span class="estrella" [class.llena]="n <= review.puntaje">★</span>
+                }
+              </span>
+              <small>{{ review.creadoEn | date: 'dd/MM/yyyy' }}</small>
+            </div>
+            @if (review.comentario) {
+              <p class="review-texto">{{ review.comentario }}</p>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </section>
 }

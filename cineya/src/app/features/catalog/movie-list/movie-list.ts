@@ -4,10 +4,11 @@ import { MovieService } from '../services/movie';
 import { Pelicula } from '../../../core/models/pelicula.model';
 import { Genero } from '../../../core/models/genero.model';
 import { FiltrarPeliculasPipe } from '../../../shared/pipes/filtrar-peliculas-pipe';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-movie-list',
-  imports: [FiltrarPeliculasPipe, RouterLink],
+  imports: [RouterLink, FiltrarPeliculasPipe, DecimalPipe],
   templateUrl: './movie-list.html',
   styleUrl: './movie-list.scss'
 })
