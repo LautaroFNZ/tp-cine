@@ -49,4 +49,34 @@ export class MovieService {
 
     return data ?? [];
   }
+
+  async obtenerPeliculaPorId(id: string): Promise<Pelicula | null> {
+  const { data, error } = await this.supabase.client
+    .from('movies')
+    .select(`
+      id,
+      titulo:title,
+      sinopsis:synopsis,
+      imagenUrl:image_url,
+      duracionMinutos:duration_minutes,
+      clasificacionEdad:age_rating,
+      fechaEstreno:release_date,
+      precioPreventa:presale_price,
+      finPreventa:presale_ends_at,
+      creadoEn:created_at,
+      generos:movie_genres(genero:genres(id, nombre:name))
+    `)
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error('Error al obtener la película', error);
+    return null;
+  }
+
+  return {
+    ...data,
+    generos: data.generos?.map((mg: any) => mg.genero) ?? []
+  };
+}
 }

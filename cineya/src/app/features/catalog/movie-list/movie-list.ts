@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MovieService } from '../services/movie';
 import { Pelicula } from '../../../core/models/pelicula.model';
 import { Genero } from '../../../core/models/genero.model';
@@ -6,7 +7,7 @@ import { FiltrarPeliculasPipe } from '../../../shared/pipes/filtrar-peliculas-pi
 
 @Component({
   selector: 'app-movie-list',
-  imports: [FiltrarPeliculasPipe],
+  imports: [FiltrarPeliculasPipe, RouterLink],
   templateUrl: './movie-list.html',
   styleUrl: './movie-list.scss'
 })

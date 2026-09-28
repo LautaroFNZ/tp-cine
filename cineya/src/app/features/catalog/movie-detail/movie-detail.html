@@ -1,0 +1,27 @@
+@if (cargando()) {
+  <p>Cargando película...</p>
+} @else if (noEncontrada()) {
+  <p>No se encontró la película.</p>
+  <a routerLink="/">Volver a la cartelera</a>
+} @else if (pelicula(); as p) {
+  <a routerLink="/">← Volver a la cartelera</a>
+
+  <article class="movie-detail">
+    <img [src]="p.imagenUrl" [alt]="p.titulo">
+
+    <div class="info">
+      <h1>{{ p.titulo }}</h1>
+      <p class="duracion">{{ p.duracionMinutos }} min</p>
+
+      @if (p.generos?.length) {
+        <p class="genres">
+          @for (genero of p.generos; track genero.id) {
+            <span class="tag">{{ genero.nombre }}</span>
+          }
+        </p>
+      }
+
+      <p class="sinopsis">{{ p.sinopsis }}</p>
+    </div>
+  </article>
+}
