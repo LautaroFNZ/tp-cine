@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Pelicula } from '../../../core/models/pelicula.model';
+import { Genero } from '../../../core/models/genero.model';
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
@@ -33,5 +34,19 @@ export class MovieService {
       ...pelicula,
       generos: pelicula.generos?.map((mg: any) => mg.genero) ?? []
     }));
+  }
+
+  async obtenerGeneros(): Promise<Genero[]> {
+    const { data, error } = await this.supabase.client
+      .from('genres')
+      .select('id, nombre:name')
+      .order('name');
+
+    if (error) {
+      console.error('Error al obtener los géneros', error);
+      throw error;
+    }
+
+    return data ?? [];
   }
 }

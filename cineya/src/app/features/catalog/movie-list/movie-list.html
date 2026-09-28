@@ -2,23 +2,52 @@
   <p>Cargando cartelera...</p>
 } @else if (mensajeError()) {
   <p class="error">{{ mensajeError() }}</p>
-} @else if (peliculas().length === 0) {
-  <p>No hay películas cargadas todavía.</p>
 } @else {
-  <div class="movie-grid">
-    @for (pelicula of peliculas(); track pelicula.id) {
-      <article class="movie-card">
-        <img [src]="pelicula.imagenUrl" [alt]="pelicula.titulo">
-        <h3>{{ pelicula.titulo }}</h3>
-        <p>{{ pelicula.duracionMinutos }} min</p>
-        @if (pelicula.generos?.length) {
-          <p class="genres">
-            @for (genero of pelicula.generos; track genero.id) {
-              <span class="tag">{{ genero.nombre }}</span>
-            }
-          </p>
-        }
-      </article>
-    }
-  </div>
+  <section class="filtros">
+    <input
+      type="search"
+      placeholder="Buscar película..."
+      [value]="textoBusqueda()"
+      (input)="textoBusqueda.set($any($event.target).value)">
+
+    <div class="generos">
+      <button type="button"
+              [class.activo]="generoSeleccionado() === null"
+              (click)="generoSeleccionado.set(null)">
+        Todos
+      </button>
+      @for (genero of generos(); track genero.id) {
+        <button type="button"
+                [class.activo]="generoSeleccionado() === genero.id"
+                (click)="generoSeleccionado.set(genero.id)">
+          {{ genero.nombre }}
+        </button>
+      }
+    </div>
+  </section>
+
+  @let filtradas = peliculas() | filtrarPeliculas: textoBusqueda() : generoSeleccionado();
+
+  @if (peliculas().length === 0) {
+    <p>No hay películas cargadas todavía.</p>
+  } @else if (filtradas.length === 0) {
+    <p>Ninguna película coincide con la búsqueda.</p>
+  } @else {
+    <div class="movie-grid">
+      @for (pelicula of filtradas; track pelicula.id) {
+        <article class="movie-card">
+          <img [src]="pelicula.imagenUrl" [alt]="pelicula.titulo">
+          <h3>{{ pelicula.titulo }}</h3>
+          <p>{{ pelicula.duracionMinutos }} min</p>
+          @if (pelicula.generos?.length) {
+            <p class="genres">
+              @for (genero of pelicula.generos; track genero.id) {
+                <span class="tag">{{ genero.nombre }}</span>
+              }
+            </p>
+          }
+        </article>
+      }
+    </div>
+  }
 }
