@@ -11,7 +11,7 @@ const CAMPOS_FUNCION = `
   peliculaId:movie_id,
   salaId:room_id,
   sala:rooms(name),
-  pelicula:movies(title),
+  pelicula:movies(title, clasificacionEdad:age_rating),
   inicio:starts_at,
   fin:ends_at,
   formato:format,
@@ -84,7 +84,7 @@ export class FuncionService {
     }
   }
 
-    async obtenerPorId(id: string): Promise<Funcion | null> {
+   async obtenerPorId(id: string): Promise<Funcion | null> {
     const { data: funcion, error } = await this.supabase.client
         .from('showtimes')
         .select(CAMPOS_FUNCION)
@@ -96,13 +96,14 @@ export class FuncionService {
         return null;
     }
     return this.convertir([funcion])[0];
-  }
+    }
 
-  private convertir(filas: any[] | null): Funcion[] {
-    return (filas ?? []).map((fila: any) => ({
-      ...fila,
-      sala: fila.sala?.name ?? '',
-      pelicula: fila.pelicula?.title ?? ''
-    }));
-  }
+    private convertir(filas: any[] | null): Funcion[] {
+        return (filas ?? []).map((fila: any) => ({
+            ...fila,
+            sala: fila.sala?.name ?? '',
+            clasificacionEdad: fila.pelicula?.clasificacionEdad ?? 'none',
+            pelicula: fila.pelicula?.title ?? ''
+        }));
+    }
 }

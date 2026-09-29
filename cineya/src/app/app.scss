@@ -11,10 +11,11 @@
 }
 
 .marca {
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-family: var(--fuente-titulos);
+  font-size: 1.9rem;
+  font-weight: 400;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+  line-height: 1;
   color: var(--color-texto);
 }
 .marca:hover {

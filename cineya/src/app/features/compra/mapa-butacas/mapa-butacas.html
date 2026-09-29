@@ -69,6 +69,24 @@
     <aside class="panel-seleccion">
       <h2>Tu selección</h2>
 
+        @if (edadMinima() > 0) {
+            <p class="restriccion">
+            Película para mayores de {{ edadMinima() }} años. Debe asistir un adulto.
+            </p>
+
+            @if (estadoEdad() === 'sin_sesion') {
+            <p class="error">
+                Para comprar entradas de esta película tenés que
+                <a routerLink="/login">iniciar sesión</a>, así verificamos tu edad.
+            </p>
+            } @else if (estadoEdad() === 'no_cumple') {
+            <p class="error">
+                No podés comprar entradas para esta película: la edad mínima es de
+                {{ edadMinima() }} años.
+            </p>
+            }
+        }
+
       @if (precios(); as p) {
         @if (p.enPreventa) {
           <p class="preventa">Precio de preventa</p>
@@ -126,7 +144,7 @@
       }
 
       <button type="button"
-              [disabled]="seleccionadas().length === 0 || confirmando()"
+              [disabled]="seleccionadas().length === 0 || confirmando() || estadoEdad() !== 'ok'"
               (click)="confirmar()">
         Confirmar butacas
       </button>

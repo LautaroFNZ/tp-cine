@@ -1,4 +1,7 @@
 :root {
+  --fuente-titulos: 'Bebas Neue', 'Impact', 'Arial Narrow', sans-serif;
+  --fuente-texto: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
   --color-fondo: #0e0e0e;
   --color-superficie: #1a1a1a;
   --color-borde: #333333;
@@ -21,7 +24,7 @@ body {
   margin: 0;
   background: var(--color-fondo);
   color: var(--color-texto);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: var(--fuente-texto);
   line-height: 1.5;
 }
 
@@ -33,9 +36,22 @@ a:hover {
   text-decoration: underline;
 }
 
+/* Títulos con la fuente de cartelera. Tiene un solo grosor: se evita el negrita sintético */
+h1, h2, h3 {
+  font-family: var(--fuente-titulos);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
 h1 {
-  font-size: 1.75rem;
+  font-size: 2.4rem;
   margin: 0 0 1rem;
+}
+h2 {
+  font-size: 1.7rem;
+}
+h3 {
+  font-size: 1.25rem;
 }
 
 input,

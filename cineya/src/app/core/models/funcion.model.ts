@@ -1,3 +1,5 @@
+import { ClasificacionEdad } from './pelicula.model';
+
 export type FormatoFuncion = '2D' | '3D' | '4D' | '5D';
 export type IdiomaFuncion = 'castellano' | 'subtitulada';
 
@@ -11,6 +13,7 @@ export interface Funcion {
   fin: string;
   formato: FormatoFuncion;
   idioma: IdiomaFuncion;
+  clasificacionEdad: ClasificacionEdad;
 }
 
 export interface DatosProgramacion {

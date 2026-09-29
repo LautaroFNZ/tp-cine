@@ -72,19 +72,19 @@ export class ButacaService {
     };
   }
 
-  async confirmar(funcionId: string, butacaIds: string[]): Promise<string> {
+    async confirmar(funcionId: string, butacaIds: string[]): Promise<string> {
     const { data: compraId, error } = await this.supabase.client.rpc('buy_tickets', {
       p_showtime_id: funcionId,
       p_seat_ids: butacaIds
     });
 
     if (error) {
-      if (error.message.includes('seat_taken')) {
-        throw new Error('BUTACA_OCUPADA');
-      }
+      if (error.message.includes('seat_taken')) throw new Error('BUTACA_OCUPADA');
+      if (error.message.includes('age_restricted')) throw new Error('EDAD_NO_PERMITIDA');
+      if (error.message.includes('login_required')) throw new Error('SESION_REQUERIDA');
       console.error('Error al confirmar las butacas', error);
       throw error;
     }
     return compraId as string;
-  }
+    }
 }

@@ -2,16 +2,19 @@ import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular
 import { CurrencyPipe, DatePipe, registerLocaleData } from '@angular/common';
 import localeEsAr from '@angular/common/locales/es-AR';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/services/auth';
 import { FuncionService } from '../../../core/services/funciones';
 import { PrecioService } from '../../../core/services/precios';
 import { ButacaService } from '../services/butacas';
 import { Funcion } from '../../../core/models/funcion.model';
 import { Butaca, TipoButaca } from '../../../core/models/butaca.model';
 import { PreciosFuncion } from '../../../core/models/precios.model';
+import { calcularEdad } from '../../../shared/utils/fechas';
 
 registerLocaleData(localeEsAr);
 
 type EstadoButaca = 'libre' | 'ocupada' | 'seleccionada';
+type EstadoEdad = 'ok' | 'sin_sesion' | 'no_cumple';
 
 interface FilaMapa {
   etiqueta: string;
@@ -30,6 +33,7 @@ export class MapaButacas implements OnInit, OnDestroy {
   private funcionService = inject(FuncionService);
   private precioService = inject(PrecioService);
   private butacaService = inject(ButacaService);
+  auth = inject(AuthService);
 
   funcion = signal<Funcion | null>(null);
   butacas = signal<Butaca[]>([]);
@@ -73,6 +77,21 @@ export class MapaButacas implements OnInit, OnDestroy {
     return this.seleccionadas().reduce((suma, butaca) => suma + this.precioDe(butaca, precios), 0);
   });
 
+  // 0 = película sin restricción de edad
+  edadMinima = computed(() => {
+    const clasificacion = this.funcion()?.clasificacionEdad;
+    return clasificacion && clasificacion !== 'none' ? Number(clasificacion) : 0;
+  });
+
+  estadoEdad = computed<EstadoEdad>(() => {
+    if (this.edadMinima() === 0) return 'ok';
+    if (!this.auth.estaAutenticado()) return 'sin_sesion';
+
+    const nacimiento = this.auth.perfil()?.fechaNacimiento;
+    if (!nacimiento) return 'no_cumple';
+    return calcularEdad(nacimiento) >= this.edadMinima() ? 'ok' : 'no_cumple';
+  });
+
   async ngOnInit() {
     const id = this.rutaActiva.snapshot.paramMap.get('id');
     if (!id) {
@@ -104,6 +123,8 @@ export class MapaButacas implements OnInit, OnDestroy {
       () => this.cargarOcupadas()
     );
 
+    // Espera a que se restaure la sesión, para no mostrar un aviso de edad equivocado
+    await this.auth.listo;
     this.cargando.set(false);
   }
 
@@ -140,7 +161,7 @@ export class MapaButacas implements OnInit, OnDestroy {
 
   async confirmar() {
     const funcionId = this.funcion()?.id;
-    if (!funcionId || this.seleccion().length === 0) return;
+    if (!funcionId || this.seleccion().length === 0 || this.estadoEdad() !== 'ok') return;
 
     const monto = this.total();
     this.confirmando.set(true);
@@ -154,6 +175,10 @@ export class MapaButacas implements OnInit, OnDestroy {
       if (error?.message === 'BUTACA_OCUPADA') {
         await this.cargarOcupadas();
         this.aviso.set('Alguna butaca se ocupó justo antes de confirmar. Revisá tu selección.');
+      } else if (error?.message === 'EDAD_NO_PERMITIDA') {
+        this.aviso.set('No cumplís la edad mínima para esta película.');
+      } else if (error?.message === 'SESION_REQUERIDA') {
+        this.aviso.set('Iniciá sesión para comprar entradas de esta película.');
       } else {
         this.aviso.set('No se pudo confirmar la selección. Probá de nuevo.');
       }
