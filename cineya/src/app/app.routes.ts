@@ -10,6 +10,11 @@ export const routes: Routes = [
       import('./features/catalog/movie-detail/movie-detail').then(m => m.MovieDetail)
   },
   {
+    path: 'funcion/:id/butacas',
+    loadComponent: () =>
+      import('./features/compra/mapa-butacas/mapa-butacas').then(m => m.MapaButacas)
+  },
+  {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
   },

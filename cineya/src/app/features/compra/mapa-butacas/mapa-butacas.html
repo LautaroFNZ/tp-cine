@@ -1,0 +1,105 @@
+@if (cargando()) {
+  <p>Cargando mapa de butacas...</p>
+} @else if (noEncontrada()) {
+  <p>No se encontró la función.</p>
+  <a routerLink="/">Volver a la cartelera</a>
+} @else if (funcion(); as f) {
+  <a [routerLink]="['/pelicula', f.peliculaId]">← Volver a la película</a>
+
+  <header class="cabecera-funcion">
+    <h1>{{ f.pelicula }}</h1>
+    <p>
+      {{ f.inicio | date: "EEEE d 'de' MMMM, HH:mm" : undefined : 'es-AR' }}
+      · {{ f.sala }} · {{ f.formato }} · {{ f.idioma }}
+    </p>
+  </header>
+
+  <div class="contenido-mapa">
+    <div class="mapa-contenedor">
+      <div class="sala">
+        <div class="pantalla">Pantalla</div>
+
+        <div class="mapa" role="group" aria-label="Mapa de butacas">
+          @for (fila of filas(); track fila.etiqueta) {
+            <div class="fila" [class.fila-accesible]="fila.tipo === 'accessible'">
+              <span class="etiqueta-fila">{{ fila.etiqueta }}</span>
+
+              @for (bloque of fila.bloques; track $index) {
+                <div class="bloque" [class.central]="$index === 1" [class.lateral]="$index !== 1">
+                  @for (butaca of bloque; track butaca.id) {
+                    <button type="button"
+                            class="butaca"
+                            [class.vip]="butaca.tipo === 'vip'"
+                            [class.accesible]="butaca.tipo === 'accessible'"
+                            [class.ocupada]="estado(butaca) === 'ocupada'"
+                            [class.seleccionada]="estado(butaca) === 'seleccionada'"
+                            [disabled]="estado(butaca) === 'ocupada'"
+                            [attr.aria-pressed]="estado(butaca) === 'seleccionada'"
+                            [attr.aria-label]="descripcion(butaca)"
+                            [title]="descripcion(butaca)"
+                            (click)="alternar(butaca)">
+                      @if (butaca.tipo === 'accessible') {
+                        <span aria-hidden="true">♿</span>
+                      }
+                    </button>
+                  }
+                </div>
+              }
+
+              <span class="etiqueta-fila">{{ fila.etiqueta }}</span>
+            </div>
+          }
+        </div>
+
+        <ul class="leyenda">
+          <li><span class="muestra"></span> Libre</li>
+          <li><span class="muestra seleccionada"></span> Seleccionada</li>
+          <li><span class="muestra ocupada"></span> Ocupada</li>
+          <li><span class="muestra vip"></span> VIP (precio superior)</li>
+          <li><span class="muestra accesible"></span> Accesible</li>
+        </ul>
+      </div>
+    </div>
+
+    <aside class="panel-seleccion">
+      <h2>Tu selección</h2>
+
+      @if (compraConfirmada()) {
+        <p class="exito">¡Butacas confirmadas!</p>
+      }
+
+      @if (seleccionadas().length === 0) {
+        <p class="aviso">Elegí tus butacas en el mapa.</p>
+      } @else {
+        <ul class="lista-seleccion">
+          @for (butaca of seleccionadas(); track butaca.id) {
+            <li>
+              <span>Fila {{ butaca.fila }} · butaca {{ butaca.numero }}</span>
+              @if (butaca.tipo === 'vip') {
+                <span class="etiqueta vip">VIP</span>
+              } @else if (butaca.tipo === 'accessible') {
+                <span class="etiqueta accesible">Accesible</span>
+              }
+            </li>
+          }
+        </ul>
+
+        @if (hayVip()) {
+          <p class="advertencia-vip">
+            Tu selección incluye butacas VIP, que tienen un precio superior al resto.
+          </p>
+        }
+      }
+
+      @if (aviso()) {
+        <p class="error">{{ aviso() }}</p>
+      }
+
+      <button type="button"
+              [disabled]="seleccionadas().length === 0 || confirmando()"
+              (click)="confirmar()">
+        Confirmar butacas
+      </button>
+    </aside>
+  </div>
+}

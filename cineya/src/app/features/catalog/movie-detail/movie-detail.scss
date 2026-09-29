@@ -190,3 +190,12 @@ textarea:focus {
   font-size: 0.75rem;
   text-transform: capitalize;
 }
+
+a.chip-funcion {
+  color: inherit;
+  transition: border-color 0.15s;
+}
+a.chip-funcion:hover {
+  border-color: var(--color-acento);
+  text-decoration: none;
+}
