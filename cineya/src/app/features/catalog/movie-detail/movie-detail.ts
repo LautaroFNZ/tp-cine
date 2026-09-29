@@ -1,16 +1,28 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, registerLocaleData } from '@angular/common';
+import localeEsAr from '@angular/common/locales/es-AR';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { form, FormField, maxLength, submit } from '@angular/forms/signals';
 import { MovieService } from '../services/movie';
 import { ReviewService } from '../services/reviews';
+import { FuncionService } from '../../../core/services/funciones';
 import { AuthService } from '../../../core/services/auth';
 import { Pelicula } from '../../../core/models/pelicula.model';
 import { Review } from '../../../core/models/review.model';
+import { Funcion } from '../../../core/models/funcion.model';
+import { fechaLocal } from '../../../shared/utils/fechas';
+
+registerLocaleData(localeEsAr);
 
 interface DatosReview {
   puntaje: number;
   comentario: string;
+}
+
+interface GrupoFunciones {
+  clave: string;
+  referencia: string;
+  funciones: Funcion[];
 }
 
 @Component({
@@ -23,10 +35,12 @@ export class MovieDetail implements OnInit {
   private rutaActiva = inject(ActivatedRoute);
   private movieService = inject(MovieService);
   private reviewService = inject(ReviewService);
+  private funcionService = inject(FuncionService);
   auth = inject(AuthService);
 
   pelicula = signal<Pelicula | null>(null);
   reviews = signal<Review[]>([]);
+  funciones = signal<Funcion[]>([]);
   cargando = signal(true);
   noEncontrada = signal(false);
 
@@ -58,6 +72,21 @@ export class MovieDetail implements OnInit {
     return this.reviews().find(review => review.usuarioId === usuarioId) ?? null;
   });
 
+  // Agrupa las funciones por día (según la hora local)
+  funcionesPorDia = computed<GrupoFunciones[]>(() => {
+    const grupos = new Map<string, GrupoFunciones>();
+    for (const funcion of this.funciones()) {
+      const clave = fechaLocal(new Date(funcion.inicio));
+      const grupo = grupos.get(clave);
+      if (grupo) {
+        grupo.funciones.push(funcion);
+      } else {
+        grupos.set(clave, { clave, referencia: funcion.inicio, funciones: [funcion] });
+      }
+    }
+    return [...grupos.values()];
+  });
+
   modelo = signal<DatosReview>({ puntaje: 0, comentario: '' });
 
   formulario = form(this.modelo, (campos) => {
@@ -81,7 +110,7 @@ export class MovieDetail implements OnInit {
       this.noEncontrada.set(true);
     } else {
       this.pelicula.set(pelicula);
-      await this.cargarReviews(id);
+      await Promise.all([this.cargarReviews(id), this.cargarFunciones(id)]);
     }
     this.cargando.set(false);
   }
@@ -119,6 +148,15 @@ export class MovieDetail implements OnInit {
         }
       }
     });
+  }
+
+  private async cargarFunciones(peliculaId: string) {
+    try {
+      this.funciones.set(await this.funcionService.obtenerProximasPorPelicula(peliculaId));
+    } catch {
+      // Si fallan las funciones, el resto de la página sigue funcionando
+      this.funciones.set([]);
+    }
   }
 
   private async cargarReviews(peliculaId: string) {

@@ -1,2 +1,131 @@
 <h1>Panel de administración</h1>
-<p>Acá va a vivir la gestión de salas, funciones, productos, cupones y reportes.</p>
+
+<ng-template #errores let-campo="campo">
+  @if (campo.touched() && campo.invalid()) {
+    @for (error of campo.errors(); track error) {
+      <p class="error">{{ error.message }}</p>
+    }
+  }
+</ng-template>
+
+<section class="bloque">
+  <h2>Programar funciones</h2>
+
+  <form class="formulario-tarjeta" novalidate (submit)="alEnviar($event)">
+    <label>
+      Película
+      <select [formField]="formulario.peliculaId">
+        <option value="">Seleccioná...</option>
+        @for (pelicula of peliculas(); track pelicula.id) {
+          <option [value]="pelicula.id">{{ pelicula.titulo }}</option>
+        }
+      </select>
+    </label>
+    <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.peliculaId() }" />
+
+    <div class="dias" role="group" aria-label="Días de la semana">
+      @for (dia of dias; track dia.numero) {
+        <button type="button"
+                [class.activo]="diasSeleccionados().includes(dia.numero)"
+                (click)="alternarDia(dia.numero)">
+          {{ dia.corto }}
+        </button>
+      }
+    </div>
+
+    <div class="fila">
+      <label>
+        Hora
+        <input type="time" [formField]="formulario.hora">
+      </label>
+      <label>
+        Desde
+        <input type="date" [formField]="formulario.desde">
+      </label>
+      <label>
+        Hasta
+        <input type="date" [formField]="formulario.hasta">
+      </label>
+    </div>
+    <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.hora() }" />
+    <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.desde() }" />
+    <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.hasta() }" />
+
+    <div class="fila">
+      <label>
+        Formato
+        <select [formField]="formulario.formato">
+          @for (formato of formatos; track formato) {
+            <option [value]="formato">{{ formato }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Idioma
+        <select [formField]="formulario.idioma">
+          @for (idioma of idiomas; track idioma) {
+            <option [value]="idioma">{{ idioma }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    @if (mensajeError()) {
+      <p class="error">{{ mensajeError() }}</p>
+    }
+
+    <button type="submit" [disabled]="enviando()">Programar funciones</button>
+  </form>
+
+  @if (resultados().length > 0) {
+    <table class="resultados">
+      <thead>
+        <tr><th>Fecha</th><th>Sala asignada</th><th>Estado</th></tr>
+      </thead>
+      <tbody>
+        @for (resultado of resultados(); track resultado.fecha) {
+          <tr [class.sin-sala]="resultado.estado === 'sin_sala'">
+            <td>{{ resultado.fecha | date: 'EEE dd/MM' : undefined : 'es-AR' }}</td>
+            <td>{{ resultado.sala ?? '—' }}</td>
+            <td>{{ resultado.estado === 'creada' ? 'Creada' : 'Sin sala disponible' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>
+
+<section class="bloque">
+  <h2>Próximas funciones</h2>
+
+  @if (funciones().length === 0) {
+    <p class="aviso">No hay funciones programadas.</p>
+  } @else {
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Película</th>
+            <th>Día y hora</th>
+            <th>Sala</th>
+            <th>Formato</th>
+            <th>Idioma</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (funcion of funciones(); track funcion.id) {
+            <tr>
+              <td>{{ funcion.pelicula }}</td>
+              <td>{{ funcion.inicio | date: 'EEE dd/MM HH:mm' : undefined : 'es-AR' }}</td>
+              <td>{{ funcion.sala }}</td>
+              <td>{{ funcion.formato }}</td>
+              <td>{{ funcion.idioma }}</td>
+              <td><button type="button" class="secundario" (click)="eliminar(funcion.id)">Eliminar</button></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

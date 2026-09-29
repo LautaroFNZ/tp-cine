@@ -34,7 +34,28 @@
       <p class="sinopsis">{{ p.sinopsis }}</p>
     </div>
   </article>
+  <section class="funciones">
+    <h2>Funciones</h2>
 
+    @if (funcionesPorDia().length === 0) {
+      <p class="aviso">Por el momento no hay funciones programadas.</p>
+    } @else {
+      @for (grupo of funcionesPorDia(); track grupo.clave) {
+        <div class="dia-funciones">
+          <h3>{{ grupo.referencia | date: 'EEEE d MMM' : undefined : 'es-AR' }}</h3>
+          <div class="chips-funcion">
+            @for (funcion of grupo.funciones; track funcion.id) {
+              <span class="chip-funcion">
+                <strong>{{ funcion.inicio | date: 'HH:mm' }}</strong>
+                <small>{{ funcion.formato }} · {{ funcion.idioma }}</small>
+                <small>{{ funcion.sala }}</small>
+              </span>
+            }
+          </div>
+        </div>
+      }
+    }
+  </section>
   <section class="reviews">
     <h2>Reseñas</h2>
 
