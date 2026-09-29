@@ -1,0 +1,21 @@
+.bloque {
+  max-width: 760px;
+  margin-bottom: 2.5rem;
+}
+.bloque h2 {
+  margin: 0 0 1rem;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.exito {
+  margin: 0;
+  color: var(--color-exito);
+}
+.aviso {
+  color: var(--color-texto-suave);
+}

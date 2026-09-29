@@ -55,7 +55,12 @@
           <li><span class="muestra"></span> Libre</li>
           <li><span class="muestra seleccionada"></span> Seleccionada</li>
           <li><span class="muestra ocupada"></span> Ocupada</li>
-          <li><span class="muestra vip"></span> VIP (precio superior)</li>
+          <li>
+            <span class="muestra vip"></span> VIP
+            @if (precios(); as p) {
+              (+{{ p.recargoVip | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }})
+            }
+          </li>
           <li><span class="muestra accesible"></span> Accesible</li>
         </ul>
       </div>
@@ -64,8 +69,19 @@
     <aside class="panel-seleccion">
       <h2>Tu selección</h2>
 
+      @if (precios(); as p) {
+        @if (p.enPreventa) {
+          <p class="preventa">Precio de preventa</p>
+        }
+      }
+
       @if (compraConfirmada()) {
-        <p class="exito">¡Butacas confirmadas!</p>
+        <p class="exito">
+          ¡Butacas confirmadas!
+          @if (montoConfirmado() !== null) {
+            Total: {{ montoConfirmado() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+          }
+        </p>
       }
 
       @if (seleccionadas().length === 0) {
@@ -75,11 +91,18 @@
           @for (butaca of seleccionadas(); track butaca.id) {
             <li>
               <span>Fila {{ butaca.fila }} · butaca {{ butaca.numero }}</span>
-              @if (butaca.tipo === 'vip') {
-                <span class="etiqueta vip">VIP</span>
-              } @else if (butaca.tipo === 'accessible') {
-                <span class="etiqueta accesible">Accesible</span>
-              }
+              <span class="derecha">
+                @if (butaca.tipo === 'vip') {
+                  <span class="etiqueta vip">VIP</span>
+                } @else if (butaca.tipo === 'accessible') {
+                  <span class="etiqueta accesible">Accesible</span>
+                }
+                @if (precios(); as p) {
+                  <span class="precio">
+                    {{ precioDe(butaca, p) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                  </span>
+                }
+              </span>
             </li>
           }
         </ul>
@@ -87,6 +110,13 @@
         @if (hayVip()) {
           <p class="advertencia-vip">
             Tu selección incluye butacas VIP, que tienen un precio superior al resto.
+          </p>
+        }
+
+        @if (total() !== null) {
+          <p class="total">
+            <span>Total</span>
+            <strong>{{ total() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
           </p>
         }
       }

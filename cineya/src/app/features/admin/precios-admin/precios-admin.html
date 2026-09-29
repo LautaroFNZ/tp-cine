@@ -1,0 +1,40 @@
+<section class="bloque">
+  <h2>Precios</h2>
+
+  @if (cargando()) {
+    <p class="aviso">Cargando precios...</p>
+  } @else {
+    <form class="formulario-tarjeta" novalidate (submit)="alEnviar($event)">
+      <div class="fila">
+        <label>
+          Precio base de la entrada ($)
+          <input type="number" [formField]="formulario.precioBase">
+        </label>
+        <label>
+          Recargo por butaca VIP ($)
+          <input type="number" [formField]="formulario.recargoVip">
+        </label>
+      </div>
+
+      @if (formulario.precioBase().touched() && formulario.precioBase().invalid()) {
+        @for (error of formulario.precioBase().errors(); track error) {
+          <p class="error">{{ error.message }}</p>
+        }
+      }
+      @if (formulario.recargoVip().touched() && formulario.recargoVip().invalid()) {
+        @for (error of formulario.recargoVip().errors(); track error) {
+          <p class="error">{{ error.message }}</p>
+        }
+      }
+
+      @if (mensajeError()) {
+        <p class="error">{{ mensajeError() }}</p>
+      }
+      @if (mensajeExito()) {
+        <p class="exito">{{ mensajeExito() }}</p>
+      }
+
+      <button type="submit" [disabled]="enviando()">Guardar precios</button>
+    </form>
+  }
+</section>

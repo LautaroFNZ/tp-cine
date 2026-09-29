@@ -250,3 +250,34 @@
     position: static;
   }
 }
+
+.preventa {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(227, 36, 43, 0.15);
+  color: var(--color-acento);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.derecha {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.precio {
+  color: var(--color-texto-suave);
+  font-variant-numeric: tabular-nums;
+}
+.total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-borde);
+}
+.total strong {
+  font-size: 1.15rem;
+}
