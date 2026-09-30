@@ -1,0 +1,38 @@
+@if (funcion(); as f) {
+  <a [routerLink]="['/pelicula', f.peliculaId]">← Volver a la película</a>
+
+  <header class="cabecera">
+    <div>
+      <h1>{{ f.pelicula }}</h1>
+      <p>
+        {{ f.inicio | date: "EEEE d 'de' MMMM, HH:mm" : undefined : 'es-AR' }}
+        · {{ f.sala }} · {{ f.formato }} · {{ f.idioma }}
+      </p>
+    </div>
+
+    @if (tiempo()) {
+      <div class="cuenta" [class.urgente]="(restante() ?? 0) <= 60">
+        <span>Tiempo para completar la compra</span>
+        <strong>{{ tiempo() }}</strong>
+      </div>
+    }
+  </header>
+}
+
+<ol class="pasos">
+  @for (nombre of pasos; track nombre; let i = $index) {
+    <li [class.activo]="paso() === i + 1" [class.hecho]="paso() > i + 1">
+      <span class="numero">{{ i + 1 }}</span>
+      {{ nombre }}
+    </li>
+  }
+</ol>
+
+<router-outlet />
+
+<app-dialogo-aviso #avisoVencido titulo="Se agotó el tiempo" (aceptado)="alAceptarVencido()">
+  <p>
+    Pasaron los 5 minutos y las butacas que habías elegido volvieron a estar disponibles.
+    Podés elegirlas de nuevo.
+  </p>
+</app-dialogo-aviso>

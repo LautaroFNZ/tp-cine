@@ -140,3 +140,22 @@ button:disabled {
   font-weight: 600;
   color: var(--color-texto);
 }
+
+/* Pasos de la compra: contenido a la izquierda y resumen a la derecha */
+.paso-compra {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 960px) {
+  .paso-compra {
+    grid-template-columns: 1fr;
+  }
+}
+
+button.secundario {
+  background: transparent;
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde);
+}

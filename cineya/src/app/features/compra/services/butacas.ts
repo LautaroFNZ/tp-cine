@@ -2,9 +2,34 @@ import { Injectable } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Butaca } from '../../../core/models/butaca.model';
 
+export interface ReservaAjena {
+  butacaId: string;
+  vence: number;
+}
+
+interface Escuchas {
+  alOcuparse: (butacaId: string) => void;
+  alLiberarse: (butacaId: string) => void;
+  alReservarse: (butacaId: string, vence: number) => void;
+  alLiberarseReserva: (butacaId: string) => void;
+  alConectar: () => void;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ButacaService {
+  private readonly claveToken = 'cineya_token_reserva';
+
   constructor(private supabase: SupabaseService) {}
+
+  // Identifica a este visitante (con o sin cuenta) mientras dure la pestaña
+  private get token(): string {
+    let token = sessionStorage.getItem(this.claveToken);
+    if (!token) {
+      token = crypto.randomUUID();
+      sessionStorage.setItem(this.claveToken, token);
+    }
+    return token;
+  }
 
   async obtenerPorSala(salaId: string): Promise<Butaca[]> {
     const { data: butacas, error } = await this.supabase.client
@@ -41,30 +66,87 @@ export class ButacaService {
     return (filas ?? []).map((fila: any) => fila.seat_id);
   }
 
-  // Escucha en vivo las butacas que se ocupan o se liberan. Devuelve la función para cancelar la suscripción.
-  suscribirseAOcupacion(
-    funcionId: string,
-    alOcuparse: (butacaId: string) => void,
-    alLiberarse: (butacaId: string) => void,
-    alConectar: () => void
-  ): () => void {
+  // Reservas vigentes de la función (incluye las propias)
+  async obtenerReservas(funcionId: string): Promise<ReservaAjena[]> {
+    const { data: filas, error } = await this.supabase.client
+      .from('seat_holds')
+      .select('seat_id, expires_at')
+      .eq('showtime_id', funcionId)
+      .gt('expires_at', new Date().toISOString());
+
+    if (error) {
+      console.error('Error al obtener las reservas', error);
+      throw error;
+    }
+    return (filas ?? []).map((fila: any) => ({
+      butacaId: fila.seat_id,
+      vence: Date.parse(fila.expires_at)
+    }));
+  }
+
+  // Reserva las butacas. Devuelve cuántos segundos dura la reserva.
+  async reservar(funcionId: string, butacaIds: string[]): Promise<number> {
+    const { data: segundos, error } = await this.supabase.client.rpc('hold_seats', {
+      p_showtime_id: funcionId,
+      p_seat_ids: butacaIds,
+      p_token: this.token
+    });
+
+    if (error) this.lanzarError(error.message);
+    return Number(segundos);
+  }
+
+  async liberar(funcionId: string): Promise<void> {
+    const { error } = await this.supabase.client.rpc('release_seats', {
+      p_showtime_id: funcionId,
+      p_token: this.token
+    });
+    if (error) console.error('Error al liberar la reserva', error);
+  }
+
+  // Convierte la reserva en compra. Devuelve el id de la compra.
+  async comprar(funcionId: string, butacaIds: string[]): Promise<string> {
+    const { data: compraId, error } = await this.supabase.client.rpc('buy_tickets', {
+      p_showtime_id: funcionId,
+      p_seat_ids: butacaIds,
+      p_token: this.token
+    });
+
+    if (error) this.lanzarError(error.message);
+    return compraId as string;
+  }
+
+  // Escucha en vivo las ocupaciones y las reservas. Devuelve la función para cancelar.
+  suscribirse(funcionId: string, escuchas: Escuchas): () => void {
     const canal = this.supabase.client
-      .channel(`ocupacion-${funcionId}`)
+      .channel(`compra-${funcionId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'occupied_seats', filter: `showtime_id=eq.${funcionId}` },
-        (cambio: any) => alOcuparse(cambio.new.seat_id)
+        (cambio: any) => escuchas.alOcuparse(cambio.new.seat_id)
       )
       // Los DELETE no se pueden filtrar en el servidor: se descartan acá los de otras funciones
       .on(
         'postgres_changes',
         { event: 'DELETE', schema: 'public', table: 'occupied_seats' },
         (cambio: any) => {
-          if (cambio.old.showtime_id === funcionId) alLiberarse(cambio.old.seat_id);
+          if (cambio.old.showtime_id === funcionId) escuchas.alLiberarse(cambio.old.seat_id);
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'seat_holds', filter: `showtime_id=eq.${funcionId}` },
+        (cambio: any) => escuchas.alReservarse(cambio.new.seat_id, Date.parse(cambio.new.expires_at))
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'seat_holds' },
+        (cambio: any) => {
+          if (cambio.old.showtime_id === funcionId) escuchas.alLiberarseReserva(cambio.old.seat_id);
         }
       )
       .subscribe((estado) => {
-        if (estado === 'SUBSCRIBED') alConectar();
+        if (estado === 'SUBSCRIBED') escuchas.alConectar();
       });
 
     return () => {
@@ -72,19 +154,12 @@ export class ButacaService {
     };
   }
 
-    async confirmar(funcionId: string, butacaIds: string[]): Promise<string> {
-    const { data: compraId, error } = await this.supabase.client.rpc('buy_tickets', {
-      p_showtime_id: funcionId,
-      p_seat_ids: butacaIds
-    });
-
-    if (error) {
-      if (error.message.includes('seat_taken')) throw new Error('BUTACA_OCUPADA');
-      if (error.message.includes('age_restricted')) throw new Error('EDAD_NO_PERMITIDA');
-      if (error.message.includes('login_required')) throw new Error('SESION_REQUERIDA');
-      console.error('Error al confirmar las butacas', error);
-      throw error;
-    }
-    return compraId as string;
-    }
+  private lanzarError(mensaje: string): never {
+    if (mensaje.includes('seat_taken')) throw new Error('BUTACA_OCUPADA');
+    if (mensaje.includes('age_restricted')) throw new Error('EDAD_NO_PERMITIDA');
+    if (mensaje.includes('login_required')) throw new Error('SESION_REQUERIDA');
+    if (mensaje.includes('hold_expired')) throw new Error('RESERVA_VENCIDA');
+    console.error('Error en la compra', mensaje);
+    throw new Error(mensaje);
+  }
 }

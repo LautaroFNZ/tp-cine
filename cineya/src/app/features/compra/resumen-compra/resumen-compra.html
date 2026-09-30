@@ -1,0 +1,32 @@
+<aside class="resumen">
+  <h2>Tu compra</h2>
+
+  @if (carrito$ | async; as estado) {
+    @if (estado.butacas.length === 0) {
+      <p class="aviso">Todavía no elegiste butacas.</p>
+    } @else {
+      <ul>
+        @for (butaca of estado.butacas; track butaca.id) {
+          <li>
+            <span>
+              Fila {{ butaca.fila }} · butaca {{ butaca.numero }}
+              @if (butaca.tipo === 'vip') {
+                <span class="etiqueta">VIP</span>
+              }
+            </span>
+            <span class="precio">
+              {{ carrito.precioDe(butaca, estado.precios) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+            </span>
+          </li>
+        }
+      </ul>
+
+      <p class="total">
+        <span>Total</span>
+        <strong>{{ carrito.total(estado) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
+      </p>
+    }
+  }
+
+  <div class="acciones"><ng-content /></div>
+</aside>

@@ -1,0 +1,27 @@
+@if (compraId()) {
+  <section class="exito-compra">
+    <h2>¡Compra realizada!</h2>
+    <p>Tu compra quedó registrada.</p>
+    <p class="aviso">Número de compra: {{ compraId() }}</p>
+    <a routerLink="/">Volver a la cartelera</a>
+  </section>
+} @else {
+  <div class="paso-compra">
+    <section>
+      <h2>Pago</h2>
+      <p class="aviso">
+        Pago simulado: en esta versión no se cobra nada. En la próxima etapa se agregan
+        los métodos de pago y la entrada con código QR.
+      </p>
+
+      @if (mensajeError()) {
+        <p class="error">{{ mensajeError() }}</p>
+      }
+    </section>
+
+    <app-resumen-compra>
+      <button type="button" class="secundario" (click)="volver()">Volver</button>
+      <button type="button" [disabled]="pagando()" (click)="pagar()">Pagar</button>
+    </app-resumen-compra>
+  </div>
+}

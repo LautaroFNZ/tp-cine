@@ -3,17 +3,7 @@
 } @else if (noEncontrada()) {
   <p>No se encontró la función.</p>
   <a routerLink="/">Volver a la cartelera</a>
-} @else if (funcion(); as f) {
-  <a [routerLink]="['/pelicula', f.peliculaId]">← Volver a la película</a>
-
-  <header class="cabecera-funcion">
-    <h1>{{ f.pelicula }}</h1>
-    <p>
-      {{ f.inicio | date: "EEEE d 'de' MMMM, HH:mm" : undefined : 'es-AR' }}
-      · {{ f.sala }} · {{ f.formato }} · {{ f.idioma }}
-    </p>
-  </header>
-
+} @else if (funcion()) {
   <div class="contenido-mapa">
     <div class="mapa-contenedor">
       <div class="sala">
@@ -32,8 +22,9 @@
                             [class.vip]="butaca.tipo === 'vip'"
                             [class.accesible]="butaca.tipo === 'accessible'"
                             [class.ocupada]="estado(butaca) === 'ocupada'"
+                            [class.reservada]="estado(butaca) === 'reservada'"
                             [class.seleccionada]="estado(butaca) === 'seleccionada'"
-                            [disabled]="estado(butaca) === 'ocupada'"
+                            [disabled]="estado(butaca) === 'ocupada' || estado(butaca) === 'reservada'"
                             [attr.aria-pressed]="estado(butaca) === 'seleccionada'"
                             [attr.aria-label]="descripcion(butaca)"
                             [title]="descripcion(butaca)"
@@ -55,6 +46,7 @@
           <li><span class="muestra"></span> Libre</li>
           <li><span class="muestra seleccionada"></span> Seleccionada</li>
           <li><span class="muestra ocupada"></span> Ocupada</li>
+          <li><span class="muestra reservada"></span> Reservada</li>
           <li>
             <span class="muestra vip"></span> VIP
             @if (precios(); as p) {
@@ -69,37 +61,28 @@
     <aside class="panel-seleccion">
       <h2>Tu selección</h2>
 
-        @if (edadMinima() > 0) {
-            <p class="restriccion">
-            Película para mayores de {{ edadMinima() }} años. Debe asistir un adulto.
-            </p>
+      @if (edadMinima() > 0) {
+        <p class="restriccion">
+          Película para mayores de {{ edadMinima() }} años. Debe asistir un adulto.
+        </p>
 
-            @if (estadoEdad() === 'sin_sesion') {
-            <p class="error">
-                Para comprar entradas de esta película tenés que
-                <a routerLink="/login">iniciar sesión</a>, así verificamos tu edad.
-            </p>
-            } @else if (estadoEdad() === 'no_cumple') {
-            <p class="error">
-                No podés comprar entradas para esta película: la edad mínima es de
-                {{ edadMinima() }} años.
-            </p>
-            }
+        @if (estadoEdad() === 'sin_sesion') {
+          <p class="error">
+            Para comprar entradas de esta película tenés que
+            <a routerLink="/login">iniciar sesión</a>, así verificamos tu edad.
+          </p>
+        } @else if (estadoEdad() === 'no_cumple') {
+          <p class="error">
+            No podés comprar entradas para esta película: la edad mínima es de
+            {{ edadMinima() }} años.
+          </p>
         }
+      }
 
       @if (precios(); as p) {
         @if (p.enPreventa) {
           <p class="preventa">Precio de preventa</p>
         }
-      }
-
-      @if (compraConfirmada()) {
-        <p class="exito">
-          ¡Butacas confirmadas!
-          @if (montoConfirmado() !== null) {
-            Total: {{ montoConfirmado() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
-          }
-        </p>
       }
 
       @if (seleccionadas().length === 0) {
@@ -117,7 +100,7 @@
                 }
                 @if (precios(); as p) {
                   <span class="precio">
-                    {{ precioDe(butaca, p) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                    {{ carrito_precio(butaca, p) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
                   </span>
                 }
               </span>
@@ -151,3 +134,10 @@
     </aside>
   </div>
 }
+
+<app-dialogo-aviso #avisoTiempo titulo="Tenés 5 minutos" (aceptado)="continuar()">
+  <p>
+    Reservamos tus butacas por <strong>5 minutos</strong>. Si no completás la compra en ese
+    tiempo, se liberan y perdés la selección.
+  </p>
+</app-dialogo-aviso>

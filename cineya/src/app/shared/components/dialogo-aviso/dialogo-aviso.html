@@ -1,0 +1,5 @@
+<dialog #dialogo class="dialogo" (cancel)="$event.preventDefault()">
+  <h2>{{ titulo }}</h2>
+  <div class="mensaje"><ng-content /></div>
+  <button type="button" (click)="aceptar()">{{ textoBoton }}</button>
+</dialog>

@@ -1,20 +1,8 @@
 :host {
-  --tam: 26px;
   --espacio: 4px;
   --color-vip: #ffc93c;
   --color-accesible: #3ba7ff;
   display: block;
-}
-
-.cabecera-funcion h1 {
-  margin: 0.75rem 0 0.25rem;
-}
-.cabecera-funcion p {
-  margin: 0 0 1.25rem;
-  color: var(--color-texto-suave);
-}
-.cabecera-funcion p::first-letter {
-  text-transform: uppercase;
 }
 
 .contenido-mapa {
@@ -25,6 +13,7 @@
 }
 
 .mapa-contenedor {
+  container-type: inline-size;
   overflow-x: auto;
   padding: 1.25rem 1rem;
   background: var(--color-superficie);
@@ -33,6 +22,7 @@
 }
 
 .sala {
+  --tam: clamp(12px, min(calc((100cqw - 230px) / 28), calc((100vh - 470px) / 21)), 30px);
   display: flex;
   flex-direction: column;
   width: max-content;
@@ -118,6 +108,13 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
+.butaca.reservada {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--color-texto-suave);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .butaca.seleccionada {
   background: var(--color-acento);
   border-color: var(--color-acento);
@@ -134,7 +131,7 @@
 .fila-accesible .butaca {
   grid-column: span 2;
   height: calc(var(--tam) * 2 + var(--espacio));
-  font-size: 1.2rem;
+  font-size: calc(var(--tam) * 0.9);
 }
 
 /* Leyenda */
@@ -167,6 +164,11 @@
 .muestra.ocupada {
   background: var(--color-borde);
   opacity: 0.45;
+}
+.muestra.reservada {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--color-texto-suave);
 }
 .muestra.vip {
   border-color: var(--color-vip);
@@ -230,10 +232,6 @@
   color: var(--color-vip);
   font-size: 0.85rem;
 }
-.exito {
-  margin: 0;
-  color: var(--color-exito);
-}
 .aviso {
   margin: 0;
   color: var(--color-texto-suave);
@@ -241,16 +239,18 @@
 .error {
   margin: 0;
 }
-
-@media (max-width: 960px) {
-  .contenido-mapa {
-    grid-template-columns: 1fr;
-  }
-  .panel-seleccion {
-    position: static;
-  }
+.error a {
+  color: inherit;
+  text-decoration: underline;
 }
-
+.restriccion {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.85rem;
+}
 .preventa {
   align-self: flex-start;
   margin: 0;
@@ -282,15 +282,11 @@
   font-size: 1.15rem;
 }
 
-.restriccion {
-  margin: 0;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
-  background: rgba(255, 255, 255, 0.04);
-  font-size: 0.85rem;
-}
-.error a {
-  color: inherit;
-  text-decoration: underline;
+@media (max-width: 960px) {
+  .contenido-mapa {
+    grid-template-columns: 1fr;
+  }
+  .panel-seleccion {
+    position: static;
+  }
 }

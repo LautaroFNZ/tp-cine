@@ -1,0 +1,70 @@
+.resumen {
+  position: sticky;
+  top: 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.25rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+.etiqueta {
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 201, 60, 0.14);
+  color: #ffc93c;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.precio {
+  color: var(--color-texto-suave);
+  font-variant-numeric: tabular-nums;
+}
+.total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-borde);
+}
+.total strong {
+  font-size: 1.15rem;
+}
+.aviso {
+  margin: 0;
+  color: var(--color-texto-suave);
+}
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+@media (max-width: 960px) {
+  .resumen {
+    position: static;
+  }
+}
