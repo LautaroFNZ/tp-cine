@@ -11,7 +11,10 @@
 
     <div class="info">
       <h1>{{ p.titulo }}</h1>
-      <p class="duracion">{{ p.duracionMinutos }} min</p>
+      <p class="duracion">
+        {{ p.duracionMinutos }} min
+        <span class="edad">{{ p.clasificacionEdad | edadMinima }}</span>
+      </p>
 
       @if (promedio() !== null) {
         <p class="promedio">

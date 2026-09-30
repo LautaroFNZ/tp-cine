@@ -128,3 +128,15 @@ button:disabled {
 .formulario-tarjeta .error {
   margin: -0.5rem 0 0;
 }
+
+/* Etiqueta de edad (+0, +13, +18) que se usa en la cartelera y en el detalle */
+.edad {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0 0.45rem;
+  border: 1px solid var(--color-texto-suave);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-texto);
+}

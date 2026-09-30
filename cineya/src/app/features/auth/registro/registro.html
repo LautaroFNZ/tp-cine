@@ -8,7 +8,7 @@
   }
 </ng-template>
 
-<form novalidate (submit)="alEnviar($event)">
+<form class="formulario-tarjeta" novalidate (submit)="alEnviar($event)">
   <label>
     Nombre
     <input type="text" [formField]="formulario.nombre">
@@ -33,11 +33,20 @@
   </label>
   <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.password() }" />
 
-  <label>
-    Fecha de nacimiento
-    <input type="date" [formField]="formulario.fechaNacimiento">
-  </label>
-  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.fechaNacimiento() }" />
+  <div class="campo-fecha" role="group" aria-label="Fecha de nacimiento">
+    <span>Fecha de nacimiento</span>
+    <div class="fila-fecha">
+      <input #campoDia type="text" inputmode="numeric" maxlength="2" placeholder="DD" aria-label="Día"
+             (input)="escribirFecha('dia', $event, campoMes)">
+      <input #campoMes type="text" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="Mes"
+             (input)="escribirFecha('mes', $event, campoAnio)">
+      <input #campoAnio type="text" inputmode="numeric" maxlength="4" placeholder="AAAA" aria-label="Año"
+             (input)="escribirFecha('anio', $event)">
+    </div>
+  </div>
+  @if (errorFecha()) {
+    <p class="error">{{ errorFecha() }}</p>
+  }
 
   <label>
     Tipo de sangre

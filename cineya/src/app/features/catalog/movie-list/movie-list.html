@@ -40,8 +40,10 @@
             <img [src]="pelicula.imagenUrl" [alt]="pelicula.titulo">
             <div class="movie-info">
               <h3>{{ pelicula.titulo }}</h3>
-              <p class="duracion">{{ pelicula.duracionMinutos }} min</p>
-
+              <p class="duracion">
+                {{ pelicula.duracionMinutos }} min
+                <span class="edad">{{ pelicula.clasificacionEdad | edadMinima }}</span>
+              </p>
               <p class="calificacion">
                 @if (pelicula.promedio != null) {
                   <span class="estrella">★</span>

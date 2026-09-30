@@ -11,6 +11,7 @@ import { Pelicula } from '../../../core/models/pelicula.model';
 import { Review } from '../../../core/models/review.model';
 import { Funcion } from '../../../core/models/funcion.model';
 import { fechaLocal } from '../../../shared/utils/fechas';
+import { EdadMinimaPipe } from '../../../shared/pipes/edad-minima-pipe';
 
 registerLocaleData(localeEsAr);
 
@@ -27,10 +28,12 @@ interface GrupoFunciones {
 
 @Component({
   selector: 'app-movie-detail',
-  imports: [RouterLink, FormField, DatePipe],
+  imports: [RouterLink, FormField, DatePipe, EdadMinimaPipe],
   templateUrl: './movie-detail.html',
   styleUrl: './movie-detail.scss'
 })
+
+
 export class MovieDetail implements OnInit {
   private rutaActiva = inject(ActivatedRoute);
   private movieService = inject(MovieService);

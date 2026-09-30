@@ -13,3 +13,19 @@
   color: var(--color-exito);
   margin: 0;
 }
+
+.campo-fecha {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+}
+.fila-fecha {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.6fr;
+  gap: 0.5rem;
+}
+.fila-fecha input {
+  text-align: center;
+}

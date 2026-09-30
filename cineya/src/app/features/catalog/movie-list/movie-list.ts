@@ -5,10 +5,11 @@ import { Pelicula } from '../../../core/models/pelicula.model';
 import { Genero } from '../../../core/models/genero.model';
 import { FiltrarPeliculasPipe } from '../../../shared/pipes/filtrar-peliculas-pipe';
 import { DecimalPipe } from '@angular/common';
+import { EdadMinimaPipe } from '../../../shared/pipes/edad-minima-pipe';
 
 @Component({
   selector: 'app-movie-list',
-  imports: [RouterLink, FiltrarPeliculasPipe, DecimalPipe],
+  imports: [RouterLink, FiltrarPeliculasPipe, DecimalPipe, EdadMinimaPipe],
   templateUrl: './movie-list.html',
   styleUrl: './movie-list.scss'
 })

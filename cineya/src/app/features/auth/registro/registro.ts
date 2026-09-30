@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { email, form, FormField, max, min, minLength, required, submit } from '@angular/forms/signals';
 import { AuthService, DatosRegistro } from '../../../core/services/auth';
+import { armarFecha } from '../../../shared/utils/fechas';
 
 @Component({
   selector: 'app-registro',
@@ -39,14 +40,47 @@ export class Registro {
     max(ruta.diasVacaciones, 365, { message: 'No puede superar los 365 días' });
   });
 
+  // Las tres partes de la fecha de nacimiento
+  dia = signal('');
+  mes = signal('');
+  anio = signal('');
+  intentoEnvio = signal(false);
+
+  // Mensaje de error de la fecha (null = sin error)
+  errorFecha = computed(() => {
+    const completa = this.dia() !== '' && this.mes() !== '' && this.anio().length === 4;
+    if (completa) {
+      const valida = armarFecha(+this.dia(), +this.mes(), +this.anio());
+      return valida ? null : 'Ingresá una fecha válida (no puede ser futura).';
+    }
+    return this.intentoEnvio() ? 'Completá tu fecha de nacimiento (DD / MM / AAAA).' : null;
+  });
+
   mensajeError = signal<string | null>(null);
   mensajeInfo = signal<string | null>(null);
   enviando = signal(false);
 
   constructor(private auth: AuthService, private router: Router) {}
 
+  // Se ejecuta al escribir en cualquiera de las tres casillas
+  escribirFecha(parte: 'dia' | 'mes' | 'anio', evento: Event, siguiente?: HTMLInputElement) {
+    const campo = evento.target as HTMLInputElement;
+    const valor = campo.value.replace(/\D/g, '');   // solo números
+    campo.value = valor;
+    this[parte].set(valor);
+
+    const fecha = armarFecha(+this.dia(), +this.mes(), +this.anio());
+    this.modelo.update(actual => ({ ...actual, fechaNacimiento: fecha }));
+
+    // Cuando la casilla se completa, pasa a la siguiente
+    if (siguiente && valor.length === campo.maxLength) {
+      siguiente.focus();
+    }
+  }
+
   alEnviar(evento: Event) {
     evento.preventDefault();
+    this.intentoEnvio.set(true);
     this.mensajeError.set(null);
     this.mensajeInfo.set(null);
 
