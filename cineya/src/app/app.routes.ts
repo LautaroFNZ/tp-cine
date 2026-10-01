@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { MovieList } from './features/catalog/movie-list/movie-list';
 import { guardRol } from './core/guards/rol';
 import { guardCarrito } from './core/guards/carrito';
+import { guardSalidaCompra } from './core/guards/salida-compra';
 
 export const routes: Routes = [
   { path: '', component: MovieList },
@@ -25,12 +26,14 @@ export const routes: Routes = [
       {
         path: 'candy',
         canActivate: [guardCarrito],
+        canDeactivate: [guardSalidaCompra],
         loadComponent: () =>
           import('./features/compra/paso-candy/paso-candy').then(m => m.PasoCandy)
       },
       {
         path: 'pago',
         canActivate: [guardCarrito],
+        canDeactivate: [guardSalidaCompra],
         loadComponent: () =>
           import('./features/compra/paso-pago/paso-pago').then(m => m.PasoPago)
       }

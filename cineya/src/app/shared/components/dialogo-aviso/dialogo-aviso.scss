@@ -20,6 +20,11 @@ h2 {
 .mensaje p {
   margin: 0;
 }
-button {
-  width: 100%;
+
+.botones {
+  display: flex;
+  gap: 0.5rem;
+}
+.botones button {
+  flex: 1;
 }

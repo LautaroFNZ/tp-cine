@@ -16,6 +16,7 @@ const VACIO: EstadoCarrito = { funcionId: null, butacas: [], precios: null, venc
 export class CarritoService {
   private estado = new BehaviorSubject<EstadoCarrito>(VACIO);
   readonly estado$ = this.estado.asObservable();
+  private seleccionPrevia: { funcionId: string; ids: string[] } | null = null;
 
   get valor(): EstadoCarrito {
     return this.estado.value;
@@ -27,6 +28,22 @@ export class CarritoService {
 
   vaciar() {
     this.estado.next(VACIO);
+  }
+
+  // Suelta la reserva pero recuerda qué butacas había elegido, para volver a marcarlas en el mapa
+  soltar() {
+    const actual = this.valor;
+    if (actual.funcionId) {
+      this.seleccionPrevia = { funcionId: actual.funcionId, ids: actual.butacas.map(butaca => butaca.id) };
+    }
+    this.estado.next(VACIO);
+  }
+
+  // Devuelve la selección recordada (una sola vez) si corresponde a esta función
+  recuperarSeleccionPrevia(funcionId: string): string[] {
+    const previa = this.seleccionPrevia;
+    this.seleccionPrevia = null;
+    return previa && previa.funcionId === funcionId ? previa.ids : [];
   }
 
   // ¿Hay una reserva vigente para esta función?

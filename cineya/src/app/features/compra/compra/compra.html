@@ -30,9 +30,10 @@
 
 <router-outlet />
 
-<app-dialogo-aviso #avisoVencido titulo="Se agotó el tiempo" (aceptado)="alAceptarVencido()">
+<app-dialogo-aviso #avisoSalida titulo="¿Perder tu lugar?"
+                   textoBoton="Sí, liberar butacas" textoCancelar="No, quedarme">
   <p>
-    Pasaron los 5 minutos y las butacas que habías elegido volvieron a estar disponibles.
-    Podés elegirlas de nuevo.
+    Si volvés o salís, las butacas que reservaste se liberan y otra persona puede tomarlas.
+    ¿Querés continuar?
   </p>
 </app-dialogo-aviso>

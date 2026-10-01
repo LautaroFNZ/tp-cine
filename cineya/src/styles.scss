@@ -129,7 +129,6 @@ button:disabled {
   margin: -0.5rem 0 0;
 }
 
-/* Etiqueta de edad (+0, +13, +18) que se usa en la cartelera y en el detalle */
 .edad {
   display: inline-block;
   margin-left: 0.4rem;
@@ -139,23 +138,4 @@ button:disabled {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-texto);
-}
-
-/* Pasos de la compra: contenido a la izquierda y resumen a la derecha */
-.paso-compra {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 1.5rem;
-  align-items: start;
-}
-@media (max-width: 960px) {
-  .paso-compra {
-    grid-template-columns: 1fr;
-  }
-}
-
-button.secundario {
-  background: transparent;
-  color: var(--color-texto);
-  border: 1px solid var(--color-borde);
 }

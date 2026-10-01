@@ -13,6 +13,7 @@ interface DatosPrecios {
   templateUrl: './precios-admin.html',
   styleUrl: './precios-admin.scss'
 })
+
 export class PreciosAdmin implements OnInit {
   private precioService = inject(PrecioService);
 

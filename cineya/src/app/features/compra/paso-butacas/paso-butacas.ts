@@ -54,6 +54,8 @@ export class PasoButacas implements OnInit, OnDestroy {
   noEncontrada = signal(false);
   confirmando = signal(false);
   aviso = signal<string | null>(null);
+    info = signal<string | null>(null);
+  private cantidadPrevia = 0;
 
   private funcionId = this.rutaActiva.parent?.snapshot.paramMap.get('id') ?? '';
   private estadoCarrito = toSignal(this.carrito.estado$, { initialValue: this.carrito.valor });
@@ -121,9 +123,17 @@ export class PasoButacas implements OnInit, OnDestroy {
 
     this.precios.set(await this.precioService.obtenerPreciosFuncion(this.funcionId));
 
-    // Si vuelve desde otro paso, recupera su selección
-    if (this.carrito.vigente(this.funcionId)) {
+        if (this.carrito.vigente(this.funcionId)) {
+      // Todavía tiene la reserva vigente: recupera su selección
       this.seleccion.set(this.carrito.valor.butacas.map(butaca => butaca.id));
+    } else {
+      // Si aceptó soltar sus butacas, vuelven a marcarse (sin reservar) para confirmarlas de nuevo
+      const previa = this.carrito.recuperarSeleccionPrevia(this.funcionId);
+      this.seleccion.set(previa);
+      this.cantidadPrevia = previa.length;
+      if (previa.length > 0) {
+        this.info.set('Liberamos tus butacas. Confirmalas de nuevo para reservarlas otra vez.');
+      }
     }
 
     this.cancelarSuscripcion = this.butacaService.suscribirse(this.funcionId, {
@@ -166,6 +176,7 @@ export class PasoButacas implements OnInit, OnDestroy {
     if (estado === 'ocupada' || estado === 'reservada') return;
 
     this.aviso.set(null);
+    this.info.set(null);
     this.seleccion.update(actual =>
       actual.includes(butaca.id) ? actual.filter(id => id !== butaca.id) : [...actual, butaca.id]
     );
@@ -177,6 +188,7 @@ export class PasoButacas implements OnInit, OnDestroy {
 
     this.confirmando.set(true);
     this.aviso.set(null);
+    this.info.set(null);
     try {
       const segundos = await this.butacaService.reservar(funcion.id, this.seleccion());
       this.carrito.iniciar(funcion.id, this.seleccionadas(), this.precios(), segundos);
@@ -219,6 +231,14 @@ export class PasoButacas implements OnInit, OnDestroy {
       this.seleccion.update(actual =>
         actual.filter(id => !this.ocupadas().has(id) && !this.reservadaPorOtro(id, Date.now()))
       );
+
+      // Si al volver alguna de las butacas soltadas ya no está disponible, se avisa
+      if (this.cantidadPrevia > 0) {
+        if (this.seleccion().length < this.cantidadPrevia) {
+          this.aviso.set('Algunas butacas que habías elegido ya no están disponibles. Revisá tu selección.');
+        }
+        this.cantidadPrevia = 0;
+      }
     } catch {
       this.aviso.set('No se pudo actualizar la disponibilidad de butacas.');
     }

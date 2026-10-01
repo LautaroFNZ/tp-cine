@@ -126,6 +126,10 @@
         <p class="error">{{ aviso() }}</p>
       }
 
+      @if (info()) {
+        <p class="aviso">{{ info() }}</p>
+      }
+
       <button type="button"
               [disabled]="seleccionadas().length === 0 || confirmando() || estadoEdad() !== 'ok'"
               (click)="confirmar()">

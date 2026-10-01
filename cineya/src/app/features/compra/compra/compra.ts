@@ -8,6 +8,7 @@ import { CarritoService } from '../../../core/services/carrito';
 import { FuncionService } from '../../../core/services/funciones';
 import { Funcion } from '../../../core/models/funcion.model';
 import { ButacaService } from '../services/butacas';
+import { SalidaCompraService } from '../../../core/services/salida-compra';
 import { DialogoAviso } from '../../../shared/components/dialogo-aviso/dialogo-aviso';
 
 registerLocaleData(localeEsAr);
@@ -24,8 +25,10 @@ export class Compra implements OnInit, OnDestroy {
   private funcionService = inject(FuncionService);
   private butacaService = inject(ButacaService);
   private carrito = inject(CarritoService);
+  private salida = inject(SalidaCompraService);
 
   @ViewChild('avisoVencido', { static: true }) avisoVencido!: DialogoAviso;
+  @ViewChild('avisoSalida', { static: true }) avisoSalida!: DialogoAviso;
 
   pasos = ['Butacas', 'Candy bar', 'Pago'];
   funcion = signal<Funcion | null>(null);
@@ -71,6 +74,9 @@ export class Compra implements OnInit, OnDestroy {
   }, 1000);
 
   async ngOnInit() {
+    // El guard de salida usa esta función para preguntarle al usuario
+    this.salida.preguntar = () => this.confirmarSalida();
+
     // Si quedó un carrito de otra función, se descarta
     const actual = this.carrito.valor.funcionId;
     if (actual && actual !== this.funcionId) {
@@ -81,6 +87,7 @@ export class Compra implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     clearInterval(this.reloj);
+    this.salida.preguntar = null;
 
     // Si se sale de la compra sin pagar, se liberan las butacas
     if (this.carrito.vigente(this.funcionId)) {
@@ -93,7 +100,18 @@ export class Compra implements OnInit, OnDestroy {
     this.router.navigate(['butacas'], { relativeTo: this.rutaActiva });
   }
 
+  // Pregunta si quiere perder su lugar. Si acepta, libera las butacas pero recuerda la selección.
+  private async confirmarSalida(): Promise<boolean> {
+    const acepto = await this.avisoSalida.preguntar();
+    if (acepto) {
+      await this.butacaService.liberar(this.funcionId);
+      this.carrito.soltar();
+    }
+    return acepto;
+  }
+
   private async alVencer() {
+    this.avisoSalida.cerrar();   // si la pregunta estaba abierta, se cierra
     this.carrito.vaciar();
     this.avisoVencido.abrir();
     await this.butacaService.liberar(this.funcionId);
