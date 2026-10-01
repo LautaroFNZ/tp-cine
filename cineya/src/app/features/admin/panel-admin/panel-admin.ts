@@ -12,7 +12,6 @@ import {
   ResultadoProgramacion
 } from '../../../core/models/funcion.model';
 import { fechaLocal } from '../../../shared/utils/fechas';
-import { PreciosAdmin } from '../precios-admin/precios-admin';
 
 registerLocaleData(localeEsAr);
 
@@ -27,7 +26,7 @@ interface FormularioProgramacion {
 
 @Component({
   selector: 'app-panel-admin',
-  imports: [FormField, DatePipe, NgTemplateOutlet, PreciosAdmin],
+  imports: [FormField, DatePipe, NgTemplateOutlet],
   templateUrl: './panel-admin.html',
   styleUrl: './panel-admin.scss'
 })

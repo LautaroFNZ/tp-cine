@@ -24,6 +24,7 @@ export class MovieService {
         generos:movie_genres(genero:genres(id, nombre:name)),
         puntajes:reviews(puntaje:rating)
       `)
+      .eq('is_active', true)
       .order('release_date', { ascending: false });
 
     if (error) {

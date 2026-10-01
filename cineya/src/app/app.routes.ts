@@ -57,7 +57,25 @@ export const routes: Routes = [
     path: 'admin',
     canActivate: [guardRol(['admin'])],
     loadComponent: () =>
-      import('./features/admin/panel-admin/panel-admin').then(m => m.PanelAdmin)
+      import('./features/admin/admin-layout/admin-layout').then(m => m.AdminLayout),
+    children: [
+      { path: '', redirectTo: 'peliculas', pathMatch: 'full' },
+      {
+        path: 'peliculas',
+        loadComponent: () =>
+          import('./features/admin/peliculas-admin/peliculas-admin').then(m => m.PeliculasAdmin)
+      },
+      {
+        path: 'funciones',
+        loadComponent: () =>
+          import('./features/admin/panel-admin/panel-admin').then(m => m.PanelAdmin)
+      },
+      {
+        path: 'precios',
+        loadComponent: () =>
+          import('./features/admin/precios-admin/precios-admin').then(m => m.PreciosAdmin)
+      }
+    ]
   },
   {
     path: 'empleado',

@@ -1,0 +1,125 @@
+<ng-template #errores let-campo="campo">
+  @if (campo.touched() && campo.invalid()) {
+    @for (error of campo.errors(); track error) {
+      <p class="error">{{ error.message }}</p>
+    }
+  }
+</ng-template>
+
+<form class="formulario-tarjeta" novalidate (submit)="alEnviar($event)">
+  <h2>{{ pelicula ? 'Editar película' : 'Nueva película' }}</h2>
+
+  <label>
+    Título
+    <input type="text" [formField]="formulario.titulo">
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.titulo() }" />
+
+  <label>
+    Sinopsis
+    <textarea rows="4" [formField]="formulario.sinopsis"></textarea>
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.sinopsis() }" />
+
+  <div class="fila">
+    <label>
+      Duración (minutos)
+      <input type="number" [formField]="formulario.duracionMinutos">
+    </label>
+    <label>
+      Clasificación
+      <select [formField]="formulario.clasificacionEdad">
+        @for (c of clasificaciones; track c.valor) {
+          <option [value]="c.valor">{{ c.texto }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Fecha de estreno
+      <input type="date" [formField]="formulario.fechaEstreno">
+    </label>
+  </div>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.duracionMinutos() }" />
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.fechaEstreno() }" />
+
+  <div class="bloque-campo">
+    <span class="titulo-campo">Géneros</span>
+    <div class="generos">
+      @for (genero of generos(); track genero.id) {
+        <label class="chip">
+          <input type="checkbox"
+                 [checked]="generosElegidos().includes(genero.id)"
+                 (change)="alternarGenero(genero.id)">
+          {{ genero.nombre }}
+        </label>
+      }
+    </div>
+    <div class="nuevo-genero">
+      <input type="text" placeholder="Nuevo género"
+             [value]="nombreGenero()"
+             (input)="nombreGenero.set($any($event.target).value)"
+             (keydown.enter)="$event.preventDefault(); agregarGenero()">
+      <button type="button" class="secundario" (click)="agregarGenero()">Agregar</button>
+    </div>
+    @if (mensajeGenero()) {
+      <p class="error">{{ mensajeGenero() }}</p>
+    }
+  </div>
+
+  <div class="bloque-campo">
+    <span class="titulo-campo">Póster</span>
+    <div class="modo">
+      <button type="button" [class.activo]="modoImagen() === 'archivo'" (click)="cambiarModo('archivo')">
+        Subir archivo
+      </button>
+      <button type="button" [class.activo]="modoImagen() === 'enlace'" (click)="cambiarModo('enlace')">
+        Pegar enlace
+      </button>
+    </div>
+
+    @if (modoImagen() === 'archivo') {
+      <input type="file" accept="image/jpeg,image/png,image/webp" (change)="elegirArchivo($event)">
+      <p class="ayuda">JPG, PNG o WEBP, hasta 2 MB.</p>
+    } @else {
+      <input type="url" placeholder="https://..."
+             [value]="enlace()"
+             (input)="enlace.set($any($event.target).value)">
+      <p class="ayuda">La dirección tiene que empezar con https://</p>
+    }
+
+    @if (errorImagen()) {
+      <p class="error">{{ errorImagen() }}</p>
+    }
+    @if (vistaPrevia()) {
+      <img class="vista-previa" [src]="vistaPrevia()" alt="Vista previa del póster">
+    }
+    @if (pelicula && !archivo() && !enlace().trim()) {
+      <p class="ayuda">Si no cargás una imagen nueva, se conserva la actual.</p>
+    }
+  </div>
+
+  <div class="bloque-campo">
+    <span class="titulo-campo">Preventa (opcional)</span>
+    <div class="fila">
+      <label>
+        Precio de preventa ($)
+        <input type="number" [formField]="formulario.precioPreventa">
+      </label>
+      <label>
+        Dura hasta
+        <input type="date" [formField]="formulario.finPreventa">
+      </label>
+    </div>
+    <p class="ayuda">Con precio en 0 no hay preventa. La preventa termina al final del día elegido.</p>
+    <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.precioPreventa() }" />
+  </div>
+
+  @if (mensajeError()) {
+    <p class="error">{{ mensajeError() }}</p>
+  }
+
+  <div class="acciones">
+    <button type="button" class="secundario" (click)="cancelada.emit()">Cancelar</button>
+    <button type="submit" [disabled]="guardando()">Guardar película</button>
+  </div>
+</form>

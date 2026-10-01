@@ -14,6 +14,7 @@ export interface Pelicula {
   finPreventa: string | null;
   creadoEn: string;
   generos?: Genero[];
+  activa?: boolean;
   promedio?: number | null;
   cantidadReviews?: number;
 }

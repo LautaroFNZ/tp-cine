@@ -1,0 +1,53 @@
+<section class="cabecera">
+  <h2>Películas</h2>
+  <button type="button" (click)="nueva()">Nueva película</button>
+</section>
+
+@if (formularioAbierto()) {
+  <app-formulario-pelicula
+    [pelicula]="peliculaEnEdicion()"
+    (guardada)="alGuardar()"
+    (cancelada)="cerrarFormulario()" />
+}
+
+@if (mensajeError()) {
+  <p class="error">{{ mensajeError() }}</p>
+}
+
+@if (cargando()) {
+  <p class="aviso">Cargando películas...</p>
+} @else if (peliculas().length === 0) {
+  <p class="aviso">Todavía no hay películas cargadas.</p>
+} @else {
+  <div class="tabla-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Título</th>
+          <th>Duración</th>
+          <th>Edad</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (pelicula of peliculas(); track pelicula.id) {
+          <tr [class.oculta]="!pelicula.activa">
+            <td><img class="miniatura" [src]="pelicula.imagenUrl" [alt]="pelicula.titulo"></td>
+            <td>{{ pelicula.titulo }}</td>
+            <td>{{ pelicula.duracionMinutos }} min</td>
+            <td>{{ pelicula.clasificacionEdad | edadMinima }}</td>
+            <td>{{ pelicula.activa ? 'Visible' : 'Oculta' }}</td>
+            <td class="acciones-fila">
+              <button type="button" class="secundario" (click)="editar(pelicula)">Editar</button>
+              <button type="button" class="secundario" (click)="alternarVisibilidad(pelicula)">
+                {{ pelicula.activa ? 'Ocultar' : 'Mostrar' }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

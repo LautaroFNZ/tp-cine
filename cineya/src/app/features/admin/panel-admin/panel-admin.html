@@ -1,7 +1,3 @@
-<h1>Panel de administración</h1>
-
-<app-precios-admin />
-
 <ng-template #errores let-campo="campo">
   @if (campo.touched() && campo.invalid()) {
     @for (error of campo.errors(); track error) {
