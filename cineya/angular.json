@@ -23,6 +23,7 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "allowedCommonJsDependencies": ["qrcode", "dijkstrajs"],
             "assets": [
               {
                 "glob": "**/*",
@@ -30,12 +31,12 @@
               }
             ],
             "styles": [
-                "node_modules/@fontsource/bebas-neue/400.css",
-                "node_modules/@fontsource/poppins/400.css",
-                "node_modules/@fontsource/poppins/500.css",
-                "node_modules/@fontsource/poppins/600.css",
-                "src/styles.scss"
-                      ]    
+              "node_modules/@fontsource/bebas-neue/400.css",
+              "node_modules/@fontsource/poppins/400.css",
+              "node_modules/@fontsource/poppins/500.css",
+              "node_modules/@fontsource/poppins/600.css",
+              "src/styles.scss"
+            ]
           },
           "configurations": {
             "production": {
