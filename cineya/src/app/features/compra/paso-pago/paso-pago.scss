@@ -1,6 +1,51 @@
 .aviso {
   color: var(--color-texto-suave);
 }
+
+.metodos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  border: 0;
+}
+.metodos legend {
+  margin-bottom: 0.5rem;
+  padding: 0;
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+}
+.metodo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  cursor: pointer;
+}
+.metodo.elegido {
+  border-color: var(--color-acento);
+}
+.metodo input {
+  width: auto;
+  padding: 0;
+  accent-color: var(--color-acento);
+}
+
 .exito-compra h2 {
   color: var(--color-exito);
+}
+.codigo {
+  display: inline-block;
+  margin: 0.25rem 0 1rem;
+  padding: 0.5rem 1.25rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  font-family: var(--fuente-titulos);
+  font-size: 2.4rem;
+  letter-spacing: 0.15em;
 }

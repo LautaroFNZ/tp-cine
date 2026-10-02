@@ -1,8 +1,12 @@
-@if (compraId()) {
+@if (codigo()) {
   <section class="exito-compra">
     <h2>¡Compra realizada!</h2>
-    <p>Tu compra quedó registrada.</p>
-    <p class="aviso">Número de compra: {{ compraId() }}</p>
+    <p>Pagaste {{ totalPagado() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}.</p>
+    <p>
+      Este es el código de tu compra. Presentalo para entrar a la sala y para retirar tus productos:
+    </p>
+    <p class="codigo">{{ codigoFormateado() }}</p>
+    <p class="aviso">En el próximo paso vas a poder ver y descargar tu entrada con el código QR.</p>
     <a routerLink="/">Volver a la cartelera</a>
   </section>
 } @else {
@@ -10,9 +14,20 @@
     <section>
       <h2>Pago</h2>
       <p class="aviso">
-        Pago simulado: en esta versión no se cobra nada. En la próxima etapa se agregan
-        los métodos de pago y la entrada con código QR.
+        Pago simulado: no se cobra nada ni se guardan datos de tarjeta.
       </p>
+
+      <fieldset class="metodos">
+        <legend>Método de pago</legend>
+        @for (m of metodos; track m.valor) {
+          <label class="metodo" [class.elegido]="metodo() === m.valor">
+            <input type="radio" name="metodo"
+                   [checked]="metodo() === m.valor"
+                   (change)="metodo.set(m.valor)">
+            {{ m.texto }}
+          </label>
+        }
+      </fieldset>
 
       @if (mensajeError()) {
         <p class="error">{{ mensajeError() }}</p>
@@ -20,8 +35,10 @@
     </section>
 
     <app-resumen-compra>
-      <button type="button" class="secundario" (click)="volver()">Volver</button>
-      <button type="button" [disabled]="pagando()" (click)="pagar()">Pagar</button>
+      <button type="button" class="secundario" [disabled]="pagando()" (click)="volver()">Volver</button>
+      <button type="button" [disabled]="pagando()" (click)="pagar()">
+        {{ pagando() ? 'Procesando pago...' : 'Pagar' }}
+      </button>
     </app-resumen-compra>
   </div>
 }

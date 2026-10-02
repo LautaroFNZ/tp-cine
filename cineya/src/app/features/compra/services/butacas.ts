@@ -7,6 +7,16 @@ export interface ReservaAjena {
   vence: number;
 }
 
+export interface ItemCompra {
+  productoId: string;
+  cantidad: number;
+}
+
+export interface ResultadoCompra {
+  compraId: string;
+  codigo: string;
+}
+
 interface Escuchas {
   alOcuparse: (butacaId: string) => void;
   alLiberarse: (butacaId: string) => void;
@@ -104,16 +114,26 @@ export class ButacaService {
     if (error) console.error('Error al liberar la reserva', error);
   }
 
-  // Convierte la reserva en compra. Devuelve el id de la compra.
-  async comprar(funcionId: string, butacaIds: string[]): Promise<string> {
-    const { data: compraId, error } = await this.supabase.client.rpc('buy_tickets', {
+  // Convierte la reserva en compra, con los productos elegidos. Devuelve el código de la compra.
+  async comprar(
+    funcionId: string,
+    butacaIds: string[],
+    items: ItemCompra[],
+    metodoPago: 'card' | 'wallet'
+  ): Promise<ResultadoCompra> {
+    const { data: filas, error } = await this.supabase.client.rpc('complete_purchase', {
       p_showtime_id: funcionId,
       p_seat_ids: butacaIds,
-      p_token: this.token
+      p_token: this.token,
+      p_items: items.map(item => ({ product_id: item.productoId, quantity: item.cantidad })),
+      p_payment_method: metodoPago
     });
 
     if (error) this.lanzarError(error.message);
-    return compraId as string;
+  
+
+    const fila = filas?.[0];
+    return { compraId: fila.out_purchase_id, codigo: fila.out_code };
   }
 
   // Escucha en vivo las ocupaciones y las reservas. Devuelve la función para cancelar.
@@ -159,6 +179,7 @@ export class ButacaService {
     if (mensaje.includes('age_restricted')) throw new Error('EDAD_NO_PERMITIDA');
     if (mensaje.includes('login_required')) throw new Error('SESION_REQUERIDA');
     if (mensaje.includes('hold_expired')) throw new Error('RESERVA_VENCIDA');
+    if (mensaje.includes('product_unavailable')) throw new Error('PRODUCTO_NO_DISPONIBLE');
     console.error('Error en la compra', mensaje);
     throw new Error(mensaje);
   }
