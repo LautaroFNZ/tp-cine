@@ -31,9 +31,14 @@ export class App {
     this.menuAbierto.set(false);
   }
 
-  async irAConfiguracion() {
+  async irACuenta() {
     this.cerrarMenu();
-    await this.router.navigateByUrl('/configuracion');
+    await this.router.navigateByUrl('/cuenta/detalles');
+  }
+
+  async irAMisCompras() {
+    this.cerrarMenu();
+    await this.router.navigateByUrl('/cuenta/compras');
   }
 
   async cerrarSesion() {

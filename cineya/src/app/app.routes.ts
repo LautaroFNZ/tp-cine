@@ -47,12 +47,27 @@ export const routes: Routes = [
     path: 'registro',
     loadComponent: () => import('./features/auth/registro/registro').then(m => m.Registro)
   },
-  {
-    path: 'configuracion',
+    {
+    path: 'cuenta',
     canActivate: [guardRol(['cliente', 'empleado', 'admin'])],
     loadComponent: () =>
-      import('./features/perfil/configuracion/configuracion').then(m => m.Configuracion)
+      import('./features/perfil/cuenta-layout/cuenta-layout').then(m => m.CuentaLayout),
+    children: [
+      { path: '', redirectTo: 'detalles', pathMatch: 'full' },
+      {
+        path: 'detalles',
+        loadComponent: () =>
+          import('./features/perfil/cuenta-detalles/cuenta-detalles').then(m => m.CuentaDetalles)
+      },
+      {
+        path: 'compras',
+        loadComponent: () =>
+          import('./features/perfil/cuenta-compras/cuenta-compras').then(m => m.CuentaCompras)
+      }
+    ]
   },
+  // Enlace anterior: se redirige a la cuenta
+  { path: 'configuracion', redirectTo: 'cuenta' },
   {
     path: 'admin',
     canActivate: [guardRol(['admin'])],

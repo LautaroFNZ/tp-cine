@@ -1,0 +1,94 @@
+<h2>Mis compras</h2>
+
+<!-- La tarjeta de una compra se define una sola vez y se usa en los dos grupos -->
+<ng-template #tarjeta let-compra="compra" let-vigente="vigente">
+  <article class="compra" [class.finalizada]="!vigente">
+    <header>
+      <div>
+        <h3>{{ compra.pelicula }}</h3>
+        <p class="funcion">
+          {{ compra.inicio | date: "EEE d 'de' MMM, HH:mm" : undefined : 'es-AR' }}
+          · {{ compra.sala }} · {{ compra.formato }} · {{ compra.idioma }}
+        </p>
+      </div>
+      <span class="estado" [class.vigente]="vigente">{{ vigente ? 'Vigente' : 'Finalizada' }}</span>
+    </header>
+
+    <div class="detalle">
+      <p class="rotulo">Entradas</p>
+      <ul>
+        @for (entrada of compra.entradas; track $index) {
+          <li>
+            <span>
+              Fila {{ entrada.fila }} · butaca {{ entrada.numero }}
+              @if (entrada.tipo === 'vip') {
+                <span class="etiqueta">VIP</span>
+              }
+            </span>
+            <span class="precio">
+              {{ entrada.precio | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+            </span>
+          </li>
+        }
+      </ul>
+
+      @if (compra.productos.length > 0) {
+        <p class="rotulo">Candy bar</p>
+        <ul>
+          @for (producto of compra.productos; track $index) {
+            <li>
+              <span>{{ producto.cantidad }} × {{ producto.nombre }}</span>
+              <span class="precio">
+                {{ (producto.precioUnitario * producto.cantidad) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <footer>
+      <div class="pie">
+        <span class="rotulo">Código</span>
+        <strong class="codigo">{{ codigoFormateado(compra.codigo) }}</strong>
+        <span class="comprada">
+          Comprada el {{ compra.creadaEn | date: 'dd/MM/yyyy' : undefined : 'es-AR' }}
+          @if (metodoTexto(compra.metodoPago)) {
+            · {{ metodoTexto(compra.metodoPago) }}
+          }
+        </span>
+      </div>
+      <p class="total">
+        <span>Total</span>
+        <strong>{{ compra.total | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
+      </p>
+    </footer>
+  </article>
+</ng-template>
+
+@if (cargando()) {
+  <p class="aviso">Cargando tus compras...</p>
+} @else if (mensajeError()) {
+  <p class="error">{{ mensajeError() }}</p>
+} @else if (compras().length === 0) {
+  <p class="aviso">Todavía no tenés compras. Cuando compres entradas, las vas a ver acá.</p>
+  <a routerLink="/">Ver la cartelera</a>
+} @else {
+  @if (vigentes().length > 0) {
+    <p class="grupo">Vigentes</p>
+    <div class="lista">
+      @for (compra of vigentes(); track compra.id) {
+        <ng-container [ngTemplateOutlet]="tarjeta" [ngTemplateOutletContext]="{ compra: compra, vigente: true }" />
+      }
+    </div>
+  }
+
+  @if (finalizadas().length > 0) {
+    <p class="grupo">Finalizadas</p>
+    <div class="lista">
+      @for (compra of finalizadas(); track compra.id) {
+        <ng-container [ngTemplateOutlet]="tarjeta" [ngTemplateOutletContext]="{ compra: compra, vigente: false }" />
+      }
+    </div>
+  }
+}

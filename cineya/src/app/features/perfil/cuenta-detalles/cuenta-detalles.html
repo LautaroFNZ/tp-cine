@@ -1,0 +1,16 @@
+<h2>Detalles de cuenta</h2>
+
+@if (auth.perfil(); as perfil) {
+  <dl class="datos">
+    <div>
+      <dt>Correo electrónico</dt>
+      <dd>{{ perfil.email }}</dd>
+    </div>
+    <div>
+      <dt>Nombre</dt>
+      <dd>{{ perfil.nombre }} {{ perfil.apellido }}</dd>
+    </div>
+  </dl>
+} @else {
+  <p class="aviso">No se pudieron cargar los datos de tu cuenta.</p>
+}

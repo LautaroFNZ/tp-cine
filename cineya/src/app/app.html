@@ -28,7 +28,8 @@
               <strong>Hola, {{ auth.perfil()?.nombre || 'usuario' }}</strong>
               <span>{{ auth.perfil()?.email }}</span>
             </div>
-            <button type="button" role="menuitem" (click)="irAConfiguracion()">Configuración</button>
+            <button type="button" role="menuitem" (click)="irACuenta()">Detalles de cuenta</button>
+            <button type="button" role="menuitem" (click)="irAMisCompras()">Mis compras</button>
             <button type="button" role="menuitem" (click)="cerrarSesion()">Cerrar sesión</button>
           </div>
         }
