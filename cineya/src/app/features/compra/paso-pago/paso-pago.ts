@@ -64,6 +64,7 @@ export class PasoPago {
       this.totalPagado.set(total);
       this.codigo.set(resultado.codigo);
       this.carrito.vaciar();
+      this.carrito.establecerCompraRealizada(true);
     } catch (error: any) {
       if (error?.message === 'RESERVA_VENCIDA') {
         this.mensajeError.set('Tu reserva venció. Volvé al mapa para elegir las butacas de nuevo.');

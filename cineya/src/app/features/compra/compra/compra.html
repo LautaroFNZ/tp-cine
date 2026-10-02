@@ -21,7 +21,7 @@
 
 <ol class="pasos">
   @for (nombre of pasos; track nombre; let i = $index) {
-    <li [class.activo]="paso() === i + 1" [class.hecho]="paso() > i + 1">
+    <li [class.activo]="estadoPaso(i) === 'activo'" [class.hecho]="estadoPaso(i) === 'hecho'">
       <span class="numero">{{ i + 1 }}</span>
       {{ nombre }}
     </li>

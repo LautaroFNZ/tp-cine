@@ -1,0 +1,99 @@
+@if (cargando()) {
+  <p class="aviso">Cargando tu entrada...</p>
+} @else if (noEncontrada()) {
+  <h1>No encontramos tu entrada</h1>
+  <p class="aviso">No hay ninguna compra con ese código. Revisá que esté bien escrito.</p>
+  <a routerLink="/">Volver a la cartelera</a>
+} @else if (compra(); as c) {
+  <article class="entrada">
+    <header>
+      <div>
+        <h1>{{ c.pelicula }}</h1>
+        <p class="funcion">
+          {{ c.inicio | date: "EEEE d 'de' MMMM, HH:mm" : undefined : 'es-AR' }}
+          · {{ c.sala }} · {{ c.formato }} · {{ c.idioma }}
+        </p>
+      </div>
+      <div class="estados">
+        <span class="estado" [class.usada]="c.entradaUsada">
+          {{ c.entradaUsada ? 'Entrada utilizada' : 'Entrada válida' }}
+        </span>
+        @if (c.productos.length > 0) {
+          <span class="estado" [class.usada]="c.candyEntregado">
+            {{ c.candyEntregado ? 'Candy retirado' : 'Candy pendiente' }}
+          </span>
+        }
+      </div>
+    </header>
+
+    @if (edadMinima() > 0) {
+      <p class="adulto">Película para mayores de {{ edadMinima() }} años. Debe asistir un adulto.</p>
+    }
+
+    <div class="cuerpo">
+      <div class="detalle">
+        <p class="rotulo">Butacas</p>
+        <ul>
+          @for (butaca of c.entradas; track $index) {
+            <li>
+              <span>
+                Fila {{ butaca.fila }} · butaca {{ butaca.numero }}
+                @if (butaca.tipo === 'vip') {
+                  <span class="etiqueta">VIP</span>
+                } @else if (butaca.tipo === 'accessible') {
+                  <span class="etiqueta accesible">Accesible</span>
+                }
+              </span>
+              <span class="precio">
+                {{ butaca.precio | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+              </span>
+            </li>
+          }
+        </ul>
+
+        @if (c.productos.length > 0) {
+          <p class="rotulo">Candy bar</p>
+          <ul>
+            @for (producto of c.productos; track $index) {
+              <li>
+                <span>{{ producto.cantidad }} × {{ producto.nombre }}</span>
+                <span class="precio">
+                  {{ (producto.precioUnitario * producto.cantidad) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                </span>
+              </li>
+            }
+          </ul>
+        }
+
+        <p class="total">
+          <span>Total</span>
+          <strong>{{ c.total | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
+        </p>
+      </div>
+
+      <div class="qr">
+        @if (qr()) {
+          <img [src]="qr()" alt="Código QR de tu entrada">
+        }
+        <strong class="codigo">{{ codigoFormateado() }}</strong>
+        <p class="ayuda">
+          Presentá este código en la entrada de la sala y en el candy bar. Una vez utilizado,
+          deja de ser válido.
+        </p>
+      </div>
+    </div>
+
+    @if (mensajeError()) {
+      <p class="error">{{ mensajeError() }}</p>
+    }
+
+    <div class="acciones">
+      <a class="boton secundario" routerLink="/">Volver a la cartelera</a>
+      <button type="button" [disabled]="descargando() || !qr()" (click)="descargar()">
+        {{ descargando() ? 'Generando PDF...' : 'Descargar PDF' }}
+      </button>
+    </div>
+  </article>
+} @else {
+  <p class="error">{{ mensajeError() }}</p>
+}

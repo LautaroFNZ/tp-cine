@@ -6,8 +6,11 @@
       Este es el código de tu compra. Presentalo para entrar a la sala y para retirar tus productos:
     </p>
     <p class="codigo">{{ codigoFormateado() }}</p>
-    <p class="aviso">En el próximo paso vas a poder ver y descargar tu entrada con el código QR.</p>
-    <a routerLink="/">Volver a la cartelera</a>
+    <p class="aviso">Ya podés ver tu entrada con el código QR y descargarla en PDF.</p>
+    <div class="acciones-exito">
+      <a class="boton" [routerLink]="['/entrada', codigo()]">Ver mi entrada</a>
+      <a routerLink="/">Volver a la cartelera</a>
+    </div>
   </section>
 } @else {
   <div class="paso-compra">

@@ -38,6 +38,7 @@ export class Compra implements OnInit, OnDestroy {
 
   // El carrito es un BehaviorSubject; toSignal lo convierte en un signal para usarlo acá
   private estado = toSignal(this.carrito.estado$, { initialValue: this.carrito.valor });
+  private compraRealizada = toSignal(this.carrito.compraRealizada$, { initialValue: false });
 
   private url = toSignal(
     this.router.events.pipe(
@@ -76,6 +77,10 @@ export class Compra implements OnInit, OnDestroy {
   async ngOnInit() {
     // El guard de salida usa esta función para preguntarle al usuario
     this.salida.preguntar = () => this.confirmarSalida();
+    
+    // El guard de salida usa esta función para preguntarle al usuario
+    this.salida.preguntar = () => this.confirmarSalida();
+    this.carrito.establecerCompraRealizada(false);
 
     // Si quedó un carrito de otra función, se descarta
     const actual = this.carrito.valor.funcionId;
@@ -98,6 +103,14 @@ export class Compra implements OnInit, OnDestroy {
 
   alAceptarVencido() {
     this.router.navigate(['butacas'], { relativeTo: this.rutaActiva });
+  }
+
+  // Estado de cada paso del indicador. Con la compra pagada, el último paso también queda completo.
+  estadoPaso(indice: number): 'hecho' | 'activo' | 'pendiente' {
+    const numero = indice + 1;
+    const pagada = this.compraRealizada() && this.paso() === 3;
+    if (pagada || numero < this.paso()) return 'hecho';
+    return numero === this.paso() ? 'activo' : 'pendiente';
   }
 
   // Pregunta si quiere perder su lugar. Si acepta, libera las butacas pero recuerda la selección.

@@ -23,6 +23,9 @@ const VACIO: EstadoCarrito = { funcionId: null, butacas: [], items: [], precios:
 export class CarritoService {
   private estado = new BehaviorSubject<EstadoCarrito>(VACIO);
   readonly estado$ = this.estado.asObservable();
+  // Indica que la compra ya se pagó, para que el indicador de pasos marque el último como completo
+  private compraRealizada = new BehaviorSubject<boolean>(false);
+  readonly compraRealizada$ = this.compraRealizada.asObservable();
   private seleccionPrevia: { funcionId: string; ids: string[] } | null = null;
   private itemsPrevios: { funcionId: string; items: ItemCarrito[] } | null = null;
 
@@ -31,6 +34,7 @@ export class CarritoService {
   }
 
   iniciar(funcionId: string, butacas: Butaca[], precios: PreciosFuncion | null, segundos: number) {
+    this.compraRealizada.next(false);
     const actual = this.valor;
     // Los productos elegidos se conservan si se vuelve a reservar para la misma función
     const items =
@@ -46,6 +50,10 @@ export class CarritoService {
   vaciar() {
     this.itemsPrevios = null;
     this.estado.next(VACIO);
+  }
+
+  establecerCompraRealizada(realizada: boolean) {
+    this.compraRealizada.next(realizada);
   }
 
   // Suelta la reserva pero recuerda las butacas y los productos elegidos

@@ -40,6 +40,10 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'entrada/:codigo',
+    loadComponent: () => import('./features/entrada/entrada/entrada').then(m => m.Entrada)
+  },
+  {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
   },

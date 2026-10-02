@@ -62,6 +62,7 @@
         <span>Total</span>
         <strong>{{ compra.total | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
       </p>
+      <a class="boton secundario" [routerLink]="['/entrada', compra.codigo]">Ver entrada</a>
     </footer>
   </article>
 </ng-template>

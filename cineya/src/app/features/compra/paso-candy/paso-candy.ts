@@ -54,9 +54,6 @@ export class PasoCandy implements OnInit {
   async ngOnInit() {
     try {
       this.productos.set(await this.productoService.listarDisponibles());
-      // Arranca en la primera categoría, para mostrar menos productos a la vez
-      const primera = this.categorias()[0];
-      this.categoriaElegida.set(primera ? primera.id : null);
     } catch {
       this.mensajeError.set('No se pudieron cargar los productos.');
     } finally {

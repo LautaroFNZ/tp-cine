@@ -139,3 +139,22 @@ button:disabled {
   font-weight: 600;
   color: var(--color-texto);
 }
+
+/* Enlaces con aspecto de botón */
+.boton {
+  display: inline-block;
+  padding: 0.6rem 1.1rem;
+  background: var(--color-acento);
+  color: var(--color-acento-texto);
+  border-radius: var(--radio);
+  font-weight: 600;
+}
+.boton:hover {
+  text-decoration: none;
+  filter: brightness(1.08);
+}
+.boton.secundario {
+  background: transparent;
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde);
+}

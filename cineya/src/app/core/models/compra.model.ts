@@ -29,4 +29,6 @@ export interface Compra {
   fin: string;
   entradas: EntradaCompra[];
   productos: ProductoCompra[];
+  entradaUsada?: boolean;
+  candyEntregado?: boolean;
 }
