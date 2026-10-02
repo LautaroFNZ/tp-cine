@@ -2,24 +2,41 @@
   <h2>Tu compra</h2>
 
   @if (carrito$ | async; as estado) {
-    @if (estado.butacas.length === 0) {
-      <p class="aviso">Todavía no elegiste butacas.</p>
+    @if (estado.butacas.length === 0 && estado.items.length === 0) {
+      <p class="aviso">Todavía no elegiste nada.</p>
     } @else {
-      <ul>
-        @for (butaca of estado.butacas; track butaca.id) {
-          <li>
-            <span>
-              Fila {{ butaca.fila }} · butaca {{ butaca.numero }}
-              @if (butaca.tipo === 'vip') {
-                <span class="etiqueta">VIP</span>
-              }
-            </span>
-            <span class="precio">
-              {{ carrito.precioDe(butaca, estado.precios) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
-            </span>
-          </li>
-        }
-      </ul>
+      @if (estado.butacas.length > 0) {
+        <h3 class="subtitulo">Entradas</h3>
+        <ul>
+          @for (butaca of estado.butacas; track butaca.id) {
+            <li>
+              <span>
+                Fila {{ butaca.fila }} · butaca {{ butaca.numero }}
+                @if (butaca.tipo === 'vip') {
+                  <span class="etiqueta">VIP</span>
+                }
+              </span>
+              <span class="precio">
+                {{ carrito.precioDe(butaca, estado.precios) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+              </span>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (estado.items.length > 0) {
+        <h3 class="subtitulo">Candy bar</h3>
+        <ul>
+          @for (item of estado.items; track item.producto.id) {
+            <li>
+              <span>{{ item.cantidad }} × {{ item.producto.nombre }}</span>
+              <span class="precio">
+                {{ (item.producto.precio * item.cantidad) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+              </span>
+            </li>
+          }
+        </ul>
+      }
 
       <p class="total">
         <span>Total</span>

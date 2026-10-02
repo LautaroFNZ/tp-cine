@@ -1,0 +1,36 @@
+<div class="selector">
+  <span class="titulo">Imagen (opcional)</span>
+
+  <div class="modo">
+    <button type="button" [class.activo]="modo() === 'archivo'" (click)="cambiarModo('archivo')">
+      Subir archivo
+    </button>
+    <button type="button" [class.activo]="modo() === 'enlace'" (click)="cambiarModo('enlace')">
+      Pegar enlace
+    </button>
+  </div>
+
+  @if (modo() === 'archivo') {
+    <input type="file" accept="image/jpeg,image/png,image/webp" (change)="elegirArchivo($event)">
+    <p class="ayuda">JPG, PNG o WEBP, hasta 2 MB.</p>
+  } @else {
+    <input type="url" placeholder="https://..."
+           [value]="enlace()"
+           (input)="escribirEnlace($any($event.target).value)">
+    <p class="ayuda">La dirección tiene que empezar con https://</p>
+    @if (enlace().trim() && !enlaceValido()) {
+      <p class="error">El enlace tiene que empezar con https://</p>
+    }
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (vistaPrevia()) {
+    <img class="vista-previa" [src]="vistaPrevia()" alt="Vista previa de la imagen">
+  }
+  @if (actual() && !archivo() && !enlaceValido()) {
+    <p class="ayuda">Si no cargás una imagen nueva, se conserva la actual.</p>
+  }
+</div>

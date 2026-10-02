@@ -1,3 +1,88 @@
 .aviso {
   color: var(--color-texto-suave);
 }
+
+.categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+.categorias button {
+  padding: 0.35rem 0.9rem;
+  background: var(--color-superficie);
+  color: var(--color-texto-suave);
+  border: 1px solid var(--color-borde);
+  border-radius: 999px;
+  font-weight: 500;
+}
+.categorias button.activo {
+  background: var(--color-acento);
+  border-color: var(--color-acento);
+  color: var(--color-acento-texto);
+}
+
+.productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1rem;
+}
+
+.producto {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.producto.elegido {
+  border-color: var(--color-acento);
+}
+
+.producto img,
+.sin-imagen {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+.sin-imagen {
+  background: var(--color-fondo);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.datos {
+  flex: 1;
+  padding: 0.75rem 0.85rem 0.25rem;
+}
+.datos h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.2rem;
+}
+.descripcion {
+  margin: 0 0 0.35rem;
+  color: var(--color-texto-suave);
+  font-size: 0.8rem;
+}
+.precio {
+  margin: 0;
+  font-weight: 600;
+}
+
+.cantidad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.85rem 0.85rem;
+}
+.cantidad strong {
+  min-width: 1.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.cantidad button {
+  padding: 0.35rem 0.9rem;
+}

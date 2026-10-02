@@ -1,0 +1,54 @@
+<ng-template #errores let-campo="campo">
+  @if (campo.touched() && campo.invalid()) {
+    @for (error of campo.errors(); track error) {
+      <p class="error">{{ error.message }}</p>
+    }
+  }
+</ng-template>
+
+<form class="formulario-tarjeta" novalidate (submit)="alEnviar($event)">
+  <h2>{{ producto ? 'Editar producto' : 'Nuevo producto' }}</h2>
+
+  <label>
+    Nombre
+    <input type="text" [formField]="formulario.nombre">
+  </label>
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.nombre() }" />
+
+  <label>
+    Descripción (opcional)
+    <textarea rows="2" [formField]="formulario.descripcion"></textarea>
+  </label>
+
+  <div class="fila">
+    <label>
+      Categoría
+      <select [formField]="formulario.categoriaId">
+        <option value="">Seleccioná...</option>
+        @for (categoria of categorias; track categoria.id) {
+          <option [value]="categoria.id">{{ categoria.nombre }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Precio ($)
+      <input type="number" [formField]="formulario.precio">
+    </label>
+  </div>
+  @if (categorias.length === 0) {
+    <p class="error">Primero creá al menos una categoría.</p>
+  }
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.categoriaId() }" />
+  <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.precio() }" />
+
+  <app-selector-imagen [imagenActual]="imagenActual()" (elegida)="alElegirImagen($event)" />
+
+  @if (mensajeError()) {
+    <p class="error">{{ mensajeError() }}</p>
+  }
+
+  <div class="acciones">
+    <button type="button" class="secundario" (click)="cancelado.emit()">Cancelar</button>
+    <button type="submit" [disabled]="guardando()">Guardar producto</button>
+  </div>
+</form>

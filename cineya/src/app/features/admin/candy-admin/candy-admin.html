@@ -1,0 +1,93 @@
+<section class="bloque">
+  <h2>Categorías</h2>
+
+  <div class="nueva-categoria">
+    <input type="text" placeholder="Nueva categoría (por ejemplo, Bebidas)"
+           [value]="nombreCategoria()"
+           (input)="nombreCategoria.set($any($event.target).value)"
+           (keydown.enter)="$event.preventDefault(); agregarCategoria()">
+    <button type="button" (click)="agregarCategoria()">Agregar</button>
+  </div>
+
+  @if (mensajeCategoria()) {
+    <p class="error">{{ mensajeCategoria() }}</p>
+  }
+
+  @if (!cargando() && categorias().length === 0) {
+    <p class="aviso">Todavía no hay categorías.</p>
+  } @else {
+    <ul class="categorias">
+      @for (categoria of categorias(); track categoria.id) {
+        <li>
+          {{ categoria.nombre }}
+          <button type="button" class="quitar"
+                  [attr.aria-label]="'Eliminar la categoría ' + categoria.nombre"
+                  (click)="eliminarCategoria(categoria)">×</button>
+        </li>
+      }
+    </ul>
+  }
+</section>
+
+<section class="bloque">
+  <div class="cabecera">
+    <h2>Productos</h2>
+    <button type="button" (click)="nuevo()">Nuevo producto</button>
+  </div>
+
+  @if (formularioAbierto()) {
+    <app-formulario-producto
+      [producto]="productoEnEdicion()"
+      [categorias]="categorias()"
+      (guardado)="alGuardar()"
+      (cancelado)="cerrarFormulario()" />
+  }
+
+  @if (mensajeError()) {
+    <p class="error">{{ mensajeError() }}</p>
+  }
+
+  @if (cargando()) {
+    <p class="aviso">Cargando productos...</p>
+  } @else if (productos().length === 0) {
+    <p class="aviso">Todavía no hay productos cargados.</p>
+  } @else {
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (producto of productos(); track producto.id) {
+            <tr [class.oculto]="!producto.activo">
+              <td>
+                @if (producto.imagenUrl) {
+                  <img class="miniatura" [src]="producto.imagenUrl" [alt]="producto.nombre">
+                } @else {
+                  <span class="miniatura vacia"></span>
+                }
+              </td>
+              <td>{{ producto.nombre }}</td>
+              <td>{{ producto.categoria }}</td>
+              <td>{{ producto.precio | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</td>
+              <td>{{ producto.activo ? 'Disponible' : 'Oculto' }}</td>
+              <td class="acciones-fila">
+                <button type="button" class="secundario" (click)="editar(producto)">Editar</button>
+                <button type="button" class="secundario" (click)="alternarDisponibilidad(producto)">
+                  {{ producto.activo ? 'Ocultar' : 'Mostrar' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

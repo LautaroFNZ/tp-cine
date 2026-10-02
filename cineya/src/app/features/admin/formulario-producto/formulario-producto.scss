@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  max-width: 760px;
+  margin-bottom: 2rem;
+}
+h2 {
+  margin: 0;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+textarea {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  font: inherit;
+  resize: vertical;
+}
+textarea:focus {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 1px;
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

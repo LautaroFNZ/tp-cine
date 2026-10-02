@@ -2,9 +2,63 @@
   <section>
     <h2>Candy bar</h2>
     <p class="aviso">
-      Acá vas a poder sumar pochoclos, bebidas y combos, de forma opcional.
-      Lo armamos en la próxima etapa.
+      Sumá pochoclos, bebidas y golosinas a tu compra. Es opcional: podés seguir directo al pago.
     </p>
+
+    @if (cargando()) {
+      <p class="aviso">Cargando productos...</p>
+    } @else if (mensajeError()) {
+      <p class="error">{{ mensajeError() }}</p>
+    } @else if (productos().length === 0) {
+      <p class="aviso">Por el momento no hay productos disponibles.</p>
+    } @else {
+      <div class="categorias" role="group" aria-label="Categorías">
+        <button type="button"
+                [class.activo]="categoriaElegida() === null"
+                (click)="categoriaElegida.set(null)">
+          Todos
+        </button>
+        @for (categoria of categorias(); track categoria.id) {
+          <button type="button"
+                  [class.activo]="categoriaElegida() === categoria.id"
+                  (click)="categoriaElegida.set(categoria.id)">
+            {{ categoria.nombre }}
+          </button>
+        }
+      </div>
+
+      <div class="productos">
+        @for (producto of productosVisibles(); track producto.id) {
+          <article class="producto" [class.elegido]="cantidad(producto.id) > 0">
+            @if (producto.imagenUrl) {
+              <img [src]="producto.imagenUrl" [alt]="producto.nombre">
+            } @else {
+              <div class="sin-imagen"></div>
+            }
+
+            <div class="datos">
+              <h3>{{ producto.nombre }}</h3>
+              @if (producto.descripcion) {
+                <p class="descripcion">{{ producto.descripcion }}</p>
+              }
+              <p class="precio">
+                {{ producto.precio | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+              </p>
+            </div>
+
+            <div class="cantidad">
+              @if (cantidad(producto.id) === 0) {
+                <button type="button" (click)="agregar(producto)">Agregar</button>
+              } @else {
+                <button type="button" class="secundario" aria-label="Quitar uno" (click)="quitar(producto)">−</button>
+                <strong>{{ cantidad(producto.id) }}</strong>
+                <button type="button" aria-label="Sumar uno" (click)="agregar(producto)">+</button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
   </section>
 
   <app-resumen-compra>
