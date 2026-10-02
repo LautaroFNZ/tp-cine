@@ -15,12 +15,12 @@
         </p>
       </div>
       <div class="estados">
-        <span class="estado" [class.usada]="c.entradaUsada">
-          {{ c.entradaUsada ? 'Entrada utilizada' : 'Entrada válida' }}
+        <span class="estado" [class.usada]="c.entradaUsada || funcionFinalizada()">
+          {{ c.entradaUsada ? 'Entrada utilizada' : funcionFinalizada() ? 'Función finalizada' : 'Entrada válida' }}
         </span>
         @if (c.productos.length > 0) {
-          <span class="estado" [class.usada]="c.candyEntregado">
-            {{ c.candyEntregado ? 'Candy retirado' : 'Candy pendiente' }}
+          <span class="estado" [class.usada]="c.candyEntregado || funcionFinalizada()">
+            {{ c.candyEntregado ? 'Candy retirado' : funcionFinalizada() ? 'Candy sin retirar' : 'Candy pendiente' }}
           </span>
         }
       </div>

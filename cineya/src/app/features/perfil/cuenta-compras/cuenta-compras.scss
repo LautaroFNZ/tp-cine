@@ -140,3 +140,10 @@ footer {
 .total strong {
   font-size: 1.25rem;
 }
+
+.estados {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}

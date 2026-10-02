@@ -1,2 +1,101 @@
-<h1>Panel de empleados</h1>
-<p>Acá va a vivir la validación de entradas y del candy bar.</p>
+<h1>Validación de entradas</h1>
+<p class="aviso">
+  Escribí o escaneá el código de la compra para validar la entrada y entregar los productos
+  del candy bar.
+</p>
+
+<form class="busqueda" (submit)="alApretarEnter($event)">
+  <input type="text" placeholder="Código (por ejemplo, 2DEB7-DD87F)" autocomplete="off"
+         [value]="codigo()" (input)="alEscribir($any($event.target).value)">
+  <button type="submit" [disabled]="buscando()">Buscar</button>
+  <button type="button" class="secundario" (click)="abrirCamara()">Escanear con la cámara</button>
+</form>
+
+@if (camaraAbierta()) {
+  <app-lector-qr (leido)="alLeer($event)" (cerrado)="cerrarCamara()" />
+}
+
+@if (buscando()) {
+  <p class="aviso">Buscando...</p>
+}
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+}
+@if (mensaje()) {
+  <p class="exito">{{ mensaje() }}</p>
+}
+
+@if (compra(); as c) {
+  <article class="resultado">
+    <header>
+      <div>
+        <h2>{{ c.pelicula }}</h2>
+        <p class="funcion">
+          {{ c.inicio | date: "EEEE d 'de' MMMM, HH:mm" : undefined : 'es-AR' }}
+          · {{ c.sala }} · {{ c.formato }} · {{ c.idioma }}
+        </p>
+      </div>
+      <strong class="codigo">{{ c.codigo.slice(0, 5) }}-{{ c.codigo.slice(5) }}</strong>
+    </header>
+
+    @if (estadoFuncion() === 'antes') {
+      <p class="alerta">La función es el {{ diaFuncion() }}. Todavía no se puede validar.</p>
+    } @else if (estadoFuncion() === 'terminada') {
+      <p class="alerta">La función de esta entrada ya terminó. Ya no se puede validar.</p>
+    }
+    @if (edadMinima() > 0) {
+      <p class="alerta">Película para mayores de {{ edadMinima() }} años. Debe asistir un adulto.</p>
+    }
+
+    <div class="cuerpo">
+      <div>
+        <p class="rotulo">Butacas</p>
+        <ul>
+          @for (butaca of c.entradas; track $index) {
+            <li>
+              Fila {{ butaca.fila }} · butaca {{ butaca.numero }}
+              @if (butaca.tipo === 'vip') {
+                <span class="etiqueta">VIP</span>
+              } @else if (butaca.tipo === 'accessible') {
+                <span class="etiqueta accesible">Accesible</span>
+              }
+            </li>
+          }
+        </ul>
+
+        @if (c.productos.length > 0) {
+          <p class="rotulo">Candy bar</p>
+          <ul>
+            @for (producto of c.productos; track $index) {
+              <li>{{ producto.cantidad }} × {{ producto.nombre }}</li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="acciones">
+        <div class="bloque-accion">
+          <span class="estado" [class.usada]="c.entradaUsada">
+            {{ c.entradaUsada ? 'Entrada utilizada' : 'Entrada válida' }}
+          </span>
+          <button type="button" [disabled]="procesando() || c.entradaUsada || estadoFuncion() !== 'hoy'" (click)="validarEntrada()">
+            Validar entrada
+          </button>
+        </div>
+
+        @if (c.productos.length > 0) {
+          <div class="bloque-accion">
+            <span class="estado" [class.usada]="c.candyEntregado">
+              {{ c.candyEntregado ? 'Candy retirado' : 'Candy pendiente' }}
+            </span>
+            <button type="button" [disabled]="procesando() || c.candyEntregado || estadoFuncion() !== 'hoy'" (click)="entregarCandy()">
+              Entregar productos
+            </button>
+          </div>
+        }
+
+        <button type="button" class="secundario" (click)="nuevaConsulta()">Nueva consulta</button>
+      </div>
+    </div>
+  </article>
+}

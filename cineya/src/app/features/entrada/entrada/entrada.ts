@@ -31,6 +31,11 @@ export class Entrada implements OnInit {
     return clasificacion && clasificacion !== 'none' ? Number(clasificacion) : 0;
   });
 
+    funcionFinalizada = computed(() => {
+    const compra = this.compra();
+    return compra ? Date.parse(compra.fin) < Date.now() : false;
+  });
+
   // El código se muestra en dos grupos para leerlo mejor
   codigoFormateado = computed(() => {
     const codigo = this.compra()?.codigo ?? '';

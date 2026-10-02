@@ -8,6 +8,8 @@ import { Compra } from '../../../core/models/compra.model';
 
 registerLocaleData(localeEsAr);
 
+type EstadoCompra = 'vigente' | 'utilizada' | 'finalizada';
+
 @Component({
   selector: 'app-cuenta-compras',
   imports: [CurrencyPipe, DatePipe, NgTemplateOutlet, RouterLink],
@@ -22,13 +24,13 @@ export class CuentaCompras implements OnInit {
   cargando = signal(true);
   mensajeError = signal<string | null>(null);
 
-  // Una compra está vigente mientras su función no haya terminado
+  // Vigente: todavía se puede usar. Anteriores: ya se usó la entrada o terminó la función.
   vigentes = computed(() =>
     this.compras()
-      .filter(compra => this.esVigente(compra))
+      .filter(compra => this.estadoDe(compra) === 'vigente')
       .sort((a, b) => Date.parse(a.inicio) - Date.parse(b.inicio))
   );
-  finalizadas = computed(() => this.compras().filter(compra => !this.esVigente(compra)));
+  anteriores = computed(() => this.compras().filter(compra => this.estadoDe(compra) !== 'vigente'));
 
   async ngOnInit() {
     await this.auth.listo;
@@ -48,8 +50,25 @@ export class CuentaCompras implements OnInit {
     }
   }
 
-  esVigente(compra: Compra): boolean {
-    return Date.parse(compra.fin) > Date.now();
+  // Utilizada: ya se escaneó la entrada. Finalizada: la función terminó sin usarse.
+  // Vigente: la función no terminó y la entrada todavía no se usó.
+  estadoDe(compra: Compra): EstadoCompra {
+    if (compra.entradaUsada) return 'utilizada';
+    return Date.parse(compra.fin) > Date.now() ? 'vigente' : 'finalizada';
+  }
+
+  textoEstado(estado: EstadoCompra): string {
+    return estado === 'vigente' ? 'Vigente' : estado === 'utilizada' ? 'Utilizada' : 'Finalizada';
+  }
+
+  // Los productos del candy tienen su propio estado, porque se retiran por separado
+  candyPendiente(compra: Compra): boolean {
+    return !compra.candyEntregado && Date.parse(compra.fin) > Date.now();
+  }
+
+  textoCandy(compra: Compra): string {
+    if (compra.candyEntregado) return 'Candy retirado';
+    return this.candyPendiente(compra) ? 'Candy pendiente' : 'Candy sin retirar';
   }
 
   // El código se muestra en dos grupos para leerlo mejor

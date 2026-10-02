@@ -1,8 +1,8 @@
 <h2>Mis compras</h2>
 
 <!-- La tarjeta de una compra se define una sola vez y se usa en los dos grupos -->
-<ng-template #tarjeta let-compra="compra" let-vigente="vigente">
-  <article class="compra" [class.finalizada]="!vigente">
+<ng-template #tarjeta let-compra="compra" let-estado="estado">
+  <article class="compra" [class.finalizada]="estado !== 'vigente'">
     <header>
       <div>
         <h3>{{ compra.pelicula }}</h3>
@@ -11,7 +11,12 @@
           · {{ compra.sala }} · {{ compra.formato }} · {{ compra.idioma }}
         </p>
       </div>
-      <span class="estado" [class.vigente]="vigente">{{ vigente ? 'Vigente' : 'Finalizada' }}</span>
+      <div class="estados">
+        <span class="estado" [class.vigente]="estado === 'vigente'">{{ textoEstado(estado) }}</span>
+        @if (compra.productos.length > 0) {
+          <span class="estado" [class.vigente]="candyPendiente(compra)">{{ textoCandy(compra) }}</span>
+        }
+      </div>
     </header>
 
     <div class="detalle">
@@ -79,16 +84,16 @@
     <p class="grupo">Vigentes</p>
     <div class="lista">
       @for (compra of vigentes(); track compra.id) {
-        <ng-container [ngTemplateOutlet]="tarjeta" [ngTemplateOutletContext]="{ compra: compra, vigente: true }" />
+        <ng-container [ngTemplateOutlet]="tarjeta" [ngTemplateOutletContext]="{ compra: compra, estado: estadoDe(compra) }" />
       }
     </div>
   }
 
-  @if (finalizadas().length > 0) {
-    <p class="grupo">Finalizadas</p>
+  @if (anteriores().length > 0) {
+    <p class="grupo">Anteriores</p>
     <div class="lista">
-      @for (compra of finalizadas(); track compra.id) {
-        <ng-container [ngTemplateOutlet]="tarjeta" [ngTemplateOutletContext]="{ compra: compra, vigente: false }" />
+      @for (compra of anteriores(); track compra.id) {
+        <ng-container [ngTemplateOutlet]="tarjeta" [ngTemplateOutletContext]="{ compra: compra, estado: estadoDe(compra) }" />
       }
     </div>
   }

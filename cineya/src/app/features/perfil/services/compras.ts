@@ -15,6 +15,8 @@ export class CompraService {
         total,
         creadaEn:created_at,
         metodoPago:payment_method,
+        entradaUsadaEn:entry_validated_at,
+        candyEntregadoEn:candy_delivered_at,
         entradas:tickets(
           precio:price,
           asiento:seats(fila:row_label, numero:seat_number, tipo:seat_type),
@@ -53,6 +55,8 @@ export class CompraService {
           total: Number(fila.total),
           creadaEn: fila.creadaEn,
           metodoPago: fila.metodoPago,
+          entradaUsada: !!fila.entradaUsadaEn,
+          candyEntregado: !!fila.candyEntregadoEn,
           pelicula: funcion.pelicula?.title ?? '',
           clasificacionEdad: funcion.pelicula?.age_rating ?? 'none',
           sala: funcion.sala?.name ?? '',

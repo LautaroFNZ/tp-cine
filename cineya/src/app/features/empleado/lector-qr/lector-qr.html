@@ -1,0 +1,16 @@
+<div class="lector">
+  <div class="visor" [hidden]="!!error()">
+    <video #video playsinline muted></video>
+    <div class="guia"></div>
+  </div>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (iniciando()) {
+    <p class="aviso">Iniciando la cámara...</p>
+  } @else {
+    <p class="aviso">Apuntá la cámara al código QR de la entrada.</p>
+  }
+
+  <button type="button" class="secundario" (click)="cerrar()">Cerrar cámara</button>
+</div>

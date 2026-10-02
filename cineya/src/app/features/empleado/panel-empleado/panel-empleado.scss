@@ -1,0 +1,137 @@
+.aviso {
+  color: var(--color-texto-suave);
+}
+.exito {
+  margin: 0.75rem 0;
+  color: var(--color-exito);
+  font-weight: 600;
+}
+
+.busqueda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 720px;
+  margin: 1rem 0;
+}
+.busqueda input {
+  flex: 1 1 260px;
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+}
+
+.resultado {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 900px;
+  margin-top: 1.25rem;
+  padding: 1.5rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-top: 3px solid var(--color-acento);
+  border-radius: var(--radio);
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+header h2 {
+  margin: 0 0 0.2rem;
+  font-size: 2rem;
+}
+.funcion {
+  margin: 0;
+  color: var(--color-texto-suave);
+}
+.funcion::first-letter {
+  text-transform: uppercase;
+}
+.codigo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.8rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+
+.alerta {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-acento);
+  border-radius: var(--radio);
+  color: var(--color-acento);
+  font-weight: 600;
+}
+
+.cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 2rem;
+  align-items: start;
+}
+.rotulo {
+  margin: 0.25rem 0 0.35rem;
+  color: var(--color-texto-suave);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.95rem;
+}
+.etiqueta {
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 201, 60, 0.14);
+  color: #ffc93c;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.etiqueta.accesible {
+  background: rgba(59, 167, 255, 0.14);
+  color: #3ba7ff;
+}
+
+.acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.bloque-accion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.9rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+.estado {
+  align-self: flex-start;
+  padding: 0.15rem 0.7rem;
+  border: 1px solid var(--color-exito);
+  border-radius: 999px;
+  color: var(--color-exito);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.estado.usada {
+  border-color: var(--color-borde);
+  color: var(--color-texto-suave);
+}
+
+@media (max-width: 720px) {
+  .cuerpo {
+    grid-template-columns: 1fr;
+  }
+}
