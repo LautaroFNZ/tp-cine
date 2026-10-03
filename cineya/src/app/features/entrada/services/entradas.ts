@@ -38,13 +38,17 @@ export class EntradaService {
       productos: (data.items ?? []).map((item: any) => ({
         nombre: item.name,
         cantidad: item.quantity,
-        precioUnitario: Number(item.unit_price)
+        precioUnitario: Number(item.unit_price),
+        puntos: Number(item.points ?? 0)
       })),
       entradaUsada: data.entry_used,
       candyEntregado: data.candy_delivered,
       subtotal: Number(data.subtotal),
       descuento: Number(data.discount_amount),
-      descuentoEtiqueta: data.discount_label
+      descuentoEtiqueta: data.discount_label,
+      creditoPuntos: Number(data.reward_credit ?? 0),
+      creditoUsado: Number(data.credit_used ?? 0),
+      cancelada: data.status === 'cancelled',
     };
   }
 

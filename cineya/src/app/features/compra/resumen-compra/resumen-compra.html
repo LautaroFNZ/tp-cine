@@ -38,6 +38,26 @@
         </ul>
       }
 
+      @if (estado.canjes.length > 0) {
+        <h3 class="subtitulo">Canjes con puntos</h3>
+        <ul>
+          @for (item of estado.canjes; track item.recompensa.id) {
+            <li>
+              <span>{{ item.cantidad }} × {{ item.recompensa.nombre }}</span>
+              <span class="precio">{{ item.recompensa.puntos * item.cantidad }} puntos</span>
+            </li>
+          }
+          @if (carrito.creditoEntradasCanjeadas(estado) > 0) {
+            <li>
+              <span>Entradas canjeadas</span>
+              <span class="precio">
+                − {{ carrito.creditoEntradasCanjeadas(estado) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+              </span>
+            </li>
+          }
+        </ul>
+      }
+
       @if (estado.descuento; as descuento) {
         <h3 class="subtitulo">Descuento</h3>
         <ul>
@@ -54,6 +74,21 @@
         <span>Total</span>
         <strong>{{ carrito.total(estado) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
       </p>
+
+      @if (carrito.creditoAplicado(estado) > 0) {
+        <ul>
+          <li>
+            <span>Crédito aplicado</span>
+            <span class="precio">
+              − {{ carrito.creditoAplicado(estado) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+            </span>
+          </li>
+        </ul>
+        <p class="total">
+          <span>A pagar</span>
+          <strong>{{ carrito.aPagar(estado) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
+        </p>
+      }
     }
   }
 

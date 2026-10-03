@@ -1,0 +1,62 @@
+<section class="bloque">
+  <h2>Programa de fidelización</h2>
+  <p class="aviso">
+    Los usuarios registrados ganan 1 punto por cada peso que pagan en una compra. Acá definís cuántos
+    puntos cuesta cada recompensa: la entrada gratis y los productos del candy bar que se pueden canjear.
+    Una recompensa sin costo cargado, o desactivada, no se puede canjear.
+  </p>
+
+  @if (mensajeError()) {
+    <p class="error">{{ mensajeError() }}</p>
+  }
+
+  @if (cargando()) {
+    <p class="aviso">Cargando recompensas...</p>
+  } @else {
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Recompensa</th>
+            <th>Categoría</th>
+            <th>Costo (puntos)</th>
+            <th>Canjeable</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (fila of filas(); track fila.clave) {
+            <tr [class.sin-configurar]="!fila.configurada">
+              <td><strong>{{ fila.nombre }}</strong></td>
+              <td>{{ fila.categoria }}</td>
+              <td>
+                <input type="number" min="1" aria-label="Costo en puntos"
+                       [value]="fila.puntos || ''"
+                       placeholder="Sin configurar"
+                       (input)="editarPuntos(fila.clave, $any($event.target).value)">
+              </td>
+              <td>
+                <label class="activa">
+                  <input type="checkbox" [checked]="fila.activa"
+                         (change)="editarActiva(fila.clave, $any($event.target).checked)">
+                  Activa
+                </label>
+              </td>
+              <td class="acciones-fila">
+                <button type="button" class="secundario" [disabled]="fila.guardando" (click)="guardar(fila)">
+                  {{ fila.guardando ? 'Guardando...' : 'Guardar' }}
+                </button>
+                @if (fila.mensaje) {
+                  <span class="exito">{{ fila.mensaje }}</span>
+                }
+                @if (fila.error) {
+                  <span class="error">{{ fila.error }}</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

@@ -1,0 +1,42 @@
+<h2>Mi crédito</h2>
+
+@if (cargando()) {
+  <p class="aviso">Cargando tu crédito...</p>
+} @else if (mensajeError()) {
+  <p class="error">{{ mensajeError() }}</p>
+} @else {
+  <section class="saldo">
+    <span class="rotulo">Crédito disponible</span>
+    <strong class="cifra">{{ saldo() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
+    <p class="aviso">
+      El crédito sale de las compras que cancelás: no se devuelve dinero, el valor de la compra queda en
+      tu cuenta. Lo podés usar en el pago de tus próximas compras, junto con otro método de pago.
+    </p>
+  </section>
+
+  <section class="bloque">
+    <h3 class="titulo">Movimientos</h3>
+    @if (movimientos().length === 0) {
+      <p class="aviso">Todavía no tuviste movimientos de crédito.</p>
+    } @else {
+      <ul class="movimientos">
+        @for (movimiento of movimientos(); track movimiento.id) {
+          <li>
+            <div>
+              <strong>{{ movimiento.descripcion }}</strong>
+              <span class="fecha">
+                {{ movimiento.fecha | date: "d 'de' MMM yyyy, HH:mm" : undefined : 'es-AR' }}
+                @if (movimiento.codigoCompra) {
+                  · compra <a [routerLink]="['/entrada', movimiento.codigoCompra]">{{ codigoFormateado(movimiento.codigoCompra) }}</a>
+                }
+              </span>
+            </div>
+            <span class="monto" [class.positivo]="movimiento.monto > 0">
+              {{ movimiento.monto > 0 ? '+' : '−' }}{{ (movimiento.monto > 0 ? movimiento.monto : -movimiento.monto) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+            </span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+}

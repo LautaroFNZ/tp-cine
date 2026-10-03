@@ -12,6 +12,11 @@ export interface ItemCompra {
   cantidad: number;
 }
 
+export interface CanjeElegido {
+  recompensaId: string;
+  cantidad: number;
+}
+
 export interface ResultadoCompra {
   compraId: string;
   codigo: string;
@@ -114,14 +119,16 @@ export class ButacaService {
     if (error) console.error('Error al liberar la reserva', error);
   }
 
-  // Convierte la reserva en compra, con los productos elegidos y el cupón (si hay).
-  // Devuelve el código de la compra.
+  // Convierte la reserva en compra, con los productos, el cupón, los canjes con puntos
+  // y, si el usuario lo decidió, su crédito. Devuelve el código de la compra.
   async comprar(
     funcionId: string,
     butacaIds: string[],
     items: ItemCompra[],
     metodoPago: 'card' | 'wallet',
-    cupon: string | null = null
+    cupon: string | null = null,
+    canjes: CanjeElegido[] = [],
+    usarCredito = false
   ): Promise<ResultadoCompra> {
     const { data: filas, error } = await this.supabase.client.rpc('complete_purchase', {
       p_showtime_id: funcionId,
@@ -129,7 +136,9 @@ export class ButacaService {
       p_token: this.token,
       p_items: items.map(item => ({ product_id: item.productoId, quantity: item.cantidad })),
       p_payment_method: metodoPago,
-      p_coupon_code: cupon
+      p_coupon_code: cupon,
+      p_rewards: canjes.map(canje => ({ reward_id: canje.recompensaId, quantity: canje.cantidad })),
+      p_use_credit: usarCredito
     });
 
     if (error) this.lanzarError(error.message);
@@ -138,6 +147,7 @@ export class ButacaService {
     return { compraId: fila.out_purchase_id, codigo: fila.out_code };
   }
 
+  
   // Escucha en vivo las ocupaciones y las reservas. Devuelve la función para cancelar.
   suscribirse(funcionId: string, escuchas: Escuchas): () => void {
     const canal = this.supabase.client
@@ -177,15 +187,20 @@ export class ButacaService {
   }
 
   private lanzarError(mensaje: string): never {
+    // Primero los más específicos: algunos contienen el texto de otros ("login_required")
+    if (mensaje.includes('coupon_login_required')) throw new Error('CUPON_SESION');
+    if (mensaje.includes('login_required_points')) throw new Error('CANJE_SESION');
+    if (mensaje.includes('coupon_invalid')) throw new Error('CUPON_INVALIDO');
+    if (mensaje.includes('coupon_age')) throw new Error('CUPON_EDAD');
+    if (mensaje.includes('coupon_used')) throw new Error('CUPON_USADO');
+    if (mensaje.includes('insufficient_points')) throw new Error('PUNTOS_INSUFICIENTES');
+    if (mensaje.includes('reward_unavailable')) throw new Error('CANJE_NO_DISPONIBLE');
+    if (mensaje.includes('reward_exceeds_seats')) throw new Error('CANJE_EXCEDE');
+    if (mensaje.includes('product_unavailable')) throw new Error('PRODUCTO_NO_DISPONIBLE');
     if (mensaje.includes('seat_taken')) throw new Error('BUTACA_OCUPADA');
     if (mensaje.includes('age_restricted')) throw new Error('EDAD_NO_PERMITIDA');
     if (mensaje.includes('login_required')) throw new Error('SESION_REQUERIDA');
     if (mensaje.includes('hold_expired')) throw new Error('RESERVA_VENCIDA');
-    if (mensaje.includes('product_unavailable')) throw new Error('PRODUCTO_NO_DISPONIBLE');
-    if (mensaje.includes('coupon_invalid')) throw new Error('CUPON_INVALIDO');
-    if (mensaje.includes('coupon_login_required')) throw new Error('CUPON_SESION');
-    if (mensaje.includes('coupon_age')) throw new Error('CUPON_EDAD');
-    if (mensaje.includes('coupon_used')) throw new Error('CUPON_USADO');
     console.error('Error en la compra', mensaje);
     throw new Error(mensaje);
   }

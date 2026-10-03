@@ -25,6 +25,7 @@ export class ValidacionService {
     if (mensaje.includes('not_staff')) throw new Error('SIN_PERMISO');
     if (mensaje.includes('too_early')) throw new Error('OTRO_DIA');
     if (mensaje.includes('function_ended')) throw new Error('FUNCION_TERMINADA');
+    if (mensaje.includes('cancelled')) throw new Error('CANCELADA');
     console.error('Error en la validación', mensaje);
     throw new Error(mensaje);
   }

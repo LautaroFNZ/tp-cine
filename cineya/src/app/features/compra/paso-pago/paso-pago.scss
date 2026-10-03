@@ -6,8 +6,15 @@
   color: var(--color-exito);
   font-weight: 600;
 }
+.ayuda {
+  margin: 0;
+  color: var(--color-texto-suave);
+  font-size: 0.82rem;
+}
 
-.cupon {
+.cupon,
+.puntos,
+.credito {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -26,6 +33,78 @@
 .fila-cupon input {
   flex: 1 1 200px;
   text-transform: uppercase;
+}
+
+.saldo {
+  margin: 0;
+}
+.saldo strong {
+  font-family: var(--fuente-titulos);
+  font-size: 1.8rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+.recompensas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.recompensas li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+.recompensas li.elegida {
+  border-color: var(--color-acento);
+}
+.detalle-recompensa {
+  display: flex;
+  flex-direction: column;
+}
+.costo {
+  color: var(--color-texto-suave);
+  font-size: 0.8rem;
+}
+.canje {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.canje strong {
+  min-width: 1.4rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.canje button {
+  padding: 0.3rem 0.8rem;
+}
+
+.usar-credito {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  color: var(--color-texto);
+  cursor: pointer;
+}
+.usar-credito.elegido {
+  border-color: var(--color-acento);
+}
+.usar-credito input {
+  width: auto;
+  padding: 0;
+  accent-color: var(--color-acento);
 }
 
 .metodos {

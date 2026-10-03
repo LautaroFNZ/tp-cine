@@ -3,9 +3,16 @@ import { BehaviorSubject } from 'rxjs';
 import { Butaca } from '../models/butaca.model';
 import { PreciosFuncion } from '../models/precios.model';
 import { Producto } from '../models/producto.model';
+import { Recompensa } from '../models/recompensa.model';
 
 export interface ItemCarrito {
   producto: Producto;
+  cantidad: number;
+}
+
+// Una recompensa que el usuario eligió canjear con puntos
+export interface ItemCanje {
+  recompensa: Recompensa;
   cantidad: number;
 }
 
@@ -16,11 +23,19 @@ export interface Descuento {
   monto: number;
 }
 
+// Crédito de la cuenta del usuario: cuánto tiene y si decidió usarlo en esta compra
+export interface CreditoCompra {
+  saldo: number;
+  usar: boolean;
+}
+
 export interface EstadoCarrito {
   funcionId: string | null;
   butacas: Butaca[];
   items: ItemCarrito[];
+  canjes: ItemCanje[];
   descuento: Descuento | null;
+  credito: CreditoCompra;
   precios: PreciosFuncion | null;
   vence: number | null;   // instante (en milisegundos) en que vence la reserva
 }
@@ -29,7 +44,9 @@ const VACIO: EstadoCarrito = {
   funcionId: null,
   butacas: [],
   items: [],
+  canjes: [],
   descuento: null,
+  credito: { saldo: 0, usar: false },
   precios: null,
   vence: null
 };
@@ -59,11 +76,14 @@ export class CarritoService {
           ? this.itemsPrevios.items
           : [];
     this.itemsPrevios = null;
+    // Los canjes y el crédito se eligen en el pago, así que cada reserva nueva empieza sin ellos
     this.estado.next({
       funcionId,
       butacas,
       items,
+      canjes: [],
       descuento: null,
+      credito: { saldo: 0, usar: false },
       precios,
       vence: Date.now() + segundos * 1000
     });
@@ -130,8 +150,55 @@ export class CarritoService {
     this.estado.next({ ...actual, items, descuento: null });
   }
 
+  // Canjes con puntos
+  cantidadDeCanje(recompensaId: string): number {
+    return this.valor.canjes.find(item => item.recompensa.id === recompensaId)?.cantidad ?? 0;
+  }
+
+  agregarCanje(recompensa: Recompensa) {
+    const actual = this.valor;
+    const existe = actual.canjes.some(item => item.recompensa.id === recompensa.id);
+    const canjes = existe
+      ? actual.canjes.map(item =>
+          item.recompensa.id === recompensa.id ? { ...item, cantidad: item.cantidad + 1 } : item
+        )
+      : [...actual.canjes, { recompensa, cantidad: 1 }];
+    this.estado.next({ ...actual, canjes, descuento: null });
+  }
+
+  quitarCanje(recompensaId: string) {
+    const actual = this.valor;
+    const canjes = actual.canjes
+      .map(item => (item.recompensa.id === recompensaId ? { ...item, cantidad: item.cantidad - 1 } : item))
+      .filter(item => item.cantidad > 0);
+    this.estado.next({ ...actual, canjes, descuento: null });
+  }
+
+  // Puntos que cuestan todos los canjes elegidos
+  puntosCanjeados(estado: EstadoCarrito): number {
+    return estado.canjes.reduce((suma, item) => suma + item.recompensa.puntos * item.cantidad, 0);
+  }
+
+  // Cuántas entradas gratis se eligieron canjear
+  entradasCanjeadas(estado: EstadoCarrito): number {
+    return estado.canjes
+      .filter(item => item.recompensa.tipo === 'entrada')
+      .reduce((suma, item) => suma + item.cantidad, 0);
+  }
+
   establecerDescuento(descuento: Descuento | null) {
     this.estado.next({ ...this.valor, descuento });
+  }
+
+  // Crédito de la cuenta
+  establecerSaldoCredito(saldo: number) {
+    const actual = this.valor;
+    this.estado.next({ ...actual, credito: { ...actual.credito, saldo } });
+  }
+
+  usarCredito(usar: boolean) {
+    const actual = this.valor;
+    this.estado.next({ ...actual, credito: { ...actual.credito, usar } });
   }
 
   // Precios y totales
@@ -148,13 +215,32 @@ export class CarritoService {
     return estado.items.reduce((suma, item) => suma + item.producto.precio * item.cantidad, 0);
   }
 
-  // Entradas más productos, sin descuento
-  subtotal(estado: EstadoCarrito): number {
-    return this.totalButacas(estado) + this.totalProductos(estado);
+  // Lo que valen las entradas canjeadas con puntos: se descuenta el precio base
+  // (el recargo de una butaca VIP se paga aparte)
+  creditoEntradasCanjeadas(estado: EstadoCarrito): number {
+    return (estado.precios?.precioBase ?? 0) * this.entradasCanjeadas(estado);
   }
 
-  // Lo que se paga: el subtotal menos el descuento
+  // Entradas y productos que se pagan, sin descuento
+  subtotal(estado: EstadoCarrito): number {
+    return (
+      this.totalButacas(estado) - this.creditoEntradasCanjeadas(estado) + this.totalProductos(estado)
+    );
+  }
+
+  // Valor de la compra: el subtotal menos el descuento
   total(estado: EstadoCarrito): number {
     return this.subtotal(estado) - (estado.descuento?.monto ?? 0);
+  }
+
+  // Cuánto del total se cubre con el crédito de la cuenta (si el usuario decidió usarlo)
+  creditoAplicado(estado: EstadoCarrito): number {
+    if (!estado.credito.usar) return 0;
+    return Math.max(0, Math.min(estado.credito.saldo, this.total(estado)));
+  }
+
+  // Lo que queda por pagar con tarjeta o billetera
+  aPagar(estado: EstadoCarrito): number {
+    return this.total(estado) - this.creditoAplicado(estado);
   }
 }

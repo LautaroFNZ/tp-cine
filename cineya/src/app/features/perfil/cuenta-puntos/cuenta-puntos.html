@@ -1,0 +1,113 @@
+<h2>Mis puntos</h2>
+
+@if (cargando()) {
+  <p class="aviso">Cargando tus puntos...</p>
+} @else if (mensajeError()) {
+  <p class="error">{{ mensajeError() }}</p>
+} @else {
+  <section class="saldo">
+    <span class="rotulo">Saldo</span>
+    <strong class="cifra">{{ saldo() | number: '1.0-0' : 'es-AR' }}</strong>
+    <span class="unidad">puntos</span>
+    <p class="aviso">
+      Ganás 1 punto por cada peso que pagás en una compra. Los puntos son personales y no se pueden
+      transferir a otros usuarios.
+    </p>
+  </section>
+
+  <section class="bloque">
+    <h3 class="titulo">Recompensas</h3>
+    @if (recompensas().length === 0) {
+      <p class="aviso">Por el momento no hay recompensas para canjear.</p>
+    } @else {
+      <ul class="recompensas">
+        @for (recompensa of recompensas(); track recompensa.id) {
+          <li>
+            <div>
+              <strong>{{ recompensa.nombre }}</strong>
+              <span class="costo">{{ recompensa.puntos | number: '1.0-0' : 'es-AR' }} puntos</span>
+            </div>
+            @if (faltan(recompensa) === 0) {
+              <span class="estado alcanza">Te alcanza</span>
+            } @else {
+              <span class="estado">Te faltan {{ faltan(recompensa) | number: '1.0-0' : 'es-AR' }}</span>
+            }
+          </li>
+        }
+      </ul>
+      <p class="aviso">Los canjes se hacen en el paso de pago, al comprar entradas.</p>
+    }
+  </section>
+
+  <section class="bloque">
+    <h3 class="titulo">Historial de canjes</h3>
+    @if (canjes().length === 0) {
+      <p class="aviso">Todavía no canjeaste puntos.</p>
+    } @else {
+      <ul class="movimientos">
+        @for (movimiento of canjes(); track movimiento.id) {
+          <li>
+            <div>
+              <strong>{{ movimiento.cantidad }} × {{ movimiento.descripcion }}</strong>
+              <span class="fecha">
+                {{ movimiento.fecha | date: "d 'de' MMM yyyy, HH:mm" : undefined : 'es-AR' }}
+                @if (movimiento.codigoCompra) {
+                  · compra <a [routerLink]="['/entrada', movimiento.codigoCompra]">{{ codigoFormateado(movimiento.codigoCompra) }}</a>
+                }
+              </span>
+            </div>
+            <span class="puntos negativo">{{ movimiento.puntos | number: '1.0-0' : 'es-AR' }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <section class="bloque">
+    <h3 class="titulo">Puntos ganados</h3>
+    @if (ganados().length === 0) {
+      <p class="aviso">Todavía no sumaste puntos. Los ganás al comprar entradas con tu cuenta.</p>
+    } @else {
+      <ul class="movimientos">
+        @for (movimiento of ganados(); track movimiento.id) {
+          <li>
+            <div>
+              <strong>{{ movimiento.descripcion }}</strong>
+              <span class="fecha">
+                {{ movimiento.fecha | date: "d 'de' MMM yyyy, HH:mm" : undefined : 'es-AR' }}
+                @if (movimiento.codigoCompra) {
+                  · compra <a [routerLink]="['/entrada', movimiento.codigoCompra]">{{ codigoFormateado(movimiento.codigoCompra) }}</a>
+                }
+              </span>
+            </div>
+            <span class="puntos positivo">+{{ movimiento.puntos | number: '1.0-0' : 'es-AR' }}</span>
+          </li>
+        }
+      </ul>  @if (ajustes().length > 0) {
+    <section class="bloque">
+      <h3 class="titulo">Ajustes por cancelaciones</h3>
+      <ul class="movimientos">
+        @for (movimiento of ajustes(); track movimiento.id) {
+          <li>
+            <div>
+              <strong>{{ movimiento.descripcion }}</strong>
+              <span class="fecha">
+                {{ movimiento.fecha | date: "d 'de' MMM yyyy, HH:mm" : undefined : 'es-AR' }}
+                @if (movimiento.codigoCompra) {
+                  · compra <a [routerLink]="['/entrada', movimiento.codigoCompra]">{{ codigoFormateado(movimiento.codigoCompra) }}</a>
+                }
+              </span>
+            </div>
+            <span class="puntos" [class.positivo]="movimiento.puntos > 0">
+              {{ movimiento.puntos > 0 ? '+' : '' }}{{ movimiento.puntos | number: '1.0-0' : 'es-AR' }}
+            </span>
+          </li>
+        }
+      </ul>
+    </section>
+        }
+      
+    }
+
+  </section>
+}

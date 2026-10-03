@@ -1,5 +1,12 @@
 <h2>Mis compras</h2>
 
+@if (mensajeExito()) {
+  <p class="exito">{{ mensajeExito() }}</p>
+}
+@if (mensajeAccion()) {
+  <p class="error">{{ mensajeAccion() }}</p>
+}
+
 <!-- La tarjeta de una compra se define una sola vez y se usa en los dos grupos -->
 <ng-template #tarjeta let-compra="compra" let-estado="estado">
   <article class="compra" [class.finalizada]="estado !== 'vigente'">
@@ -13,7 +20,7 @@
       </div>
       <div class="estados">
         <span class="estado" [class.vigente]="estado === 'vigente'">{{ textoEstado(estado) }}</span>
-        @if (compra.productos.length > 0) {
+        @if (compra.productos.length > 0 && estado !== 'cancelada') {
           <span class="estado" [class.vigente]="candyPendiente(compra)">{{ textoCandy(compra) }}</span>
         }
       </div>
@@ -35,6 +42,14 @@
             </span>
           </li>
         }
+        @if (compra.creditoPuntos) {
+          <li>
+            <span>Entradas canjeadas con puntos</span>
+            <span class="precio">
+              − {{ compra.creditoPuntos | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+            </span>
+          </li>
+        }
       </ul>
 
       @if (compra.productos.length > 0) {
@@ -44,7 +59,11 @@
             <li>
               <span>{{ producto.cantidad }} × {{ producto.nombre }}</span>
               <span class="precio">
-                {{ (producto.precioUnitario * producto.cantidad) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                @if (producto.puntos) {
+                  Canje · {{ producto.puntos }} puntos
+                } @else {
+                  {{ (producto.precioUnitario * producto.cantidad) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                }
               </span>
             </li>
           }
@@ -62,7 +81,6 @@
           </li>
         </ul>
       }
-      
     </div>
 
     <footer>
@@ -75,6 +93,19 @@
             · {{ metodoTexto(compra.metodoPago) }}
           }
         </span>
+        @if (compra.creditoUsado) {
+          <span class="comprada">
+            Pagado con crédito: {{ compra.creditoUsado | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+          </span>
+        }
+        @if (compra.cancelada) {
+          <span class="comprada">
+            Cancelada: se acreditaron {{ compra.creditoDevuelto | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+            de crédito
+          </span>
+        } @else if (compra.puntosGanados) {
+          <span class="comprada">Sumaste {{ compra.puntosGanados }} puntos con esta compra</span>
+        }
       </div>
       <p class="total">
         <span>Total</span>
@@ -82,6 +113,22 @@
       </p>
       <a class="boton secundario" [routerLink]="['/entrada', compra.codigo]">Ver entrada</a>
     </footer>
+
+    @if (puedeCancelar(compra)) {
+      <div class="acciones-compra">
+        <button type="button" class="secundario" [disabled]="cancelando()" (click)="cancelar(compra)">
+          Cancelar compra
+        </button>
+        <span class="ayuda">
+          Podés cancelarla hasta el {{ limiteCancelacion(compra) | date: "EEE d 'de' MMM, HH:mm" : undefined : 'es-AR' }}.
+          No se devuelve dinero: recibís el valor de la compra como crédito.
+        </span>
+      </div>
+    } @else if (estado === 'vigente') {
+      <div class="acciones-compra">
+        <span class="ayuda">Ya no se puede cancelar: faltan menos de 2 horas para la función.</span>
+      </div>
+    }
   </article>
 </ng-template>
 
@@ -111,3 +158,15 @@
     </div>
   }
 }
+
+<app-dialogo-aviso #avisoCancelar titulo="¿Cancelar la compra?"
+                   textoBoton="Sí, cancelar compra" textoCancelar="No, mantenerla">
+  @if (compraACancelar(); as compra) {
+    <p>
+      Vas a cancelar tu compra de <strong>{{ compra.pelicula }}</strong>. No se devuelve dinero: el valor
+      de la compra ({{ compra.total | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}) queda como
+      crédito en tu cuenta, para usar en tus próximas compras.
+    </p>
+    <p>Las butacas se liberan y se ajustan los puntos de esta compra.</p>
+  }
+</app-dialogo-aviso>

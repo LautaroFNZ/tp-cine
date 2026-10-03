@@ -1,0 +1,70 @@
+.bloque {
+  max-width: 980px;
+}
+h2 {
+  margin: 0 0 0.5rem;
+}
+.aviso {
+  margin: 0 0 1rem;
+  max-width: 680px;
+  color: var(--color-texto-suave);
+}
+
+.tabla-scroll {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+th,
+td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--color-borde);
+  text-align: left;
+  vertical-align: middle;
+}
+th {
+  color: var(--color-texto-suave);
+  font-weight: 500;
+}
+td input[type='number'] {
+  width: 140px;
+}
+tr.sin-configurar td strong {
+  color: var(--color-texto-suave);
+}
+
+.activa {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-texto);
+  font-size: 0.9rem;
+}
+.activa input {
+  width: auto;
+  padding: 0;
+  accent-color: var(--color-acento);
+}
+
+.acciones-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+.acciones-fila button {
+  padding: 0.25rem 0.8rem;
+  font-weight: 500;
+}
+.exito {
+  color: var(--color-exito);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.acciones-fila .error {
+  margin: 0;
+  font-size: 0.8rem;
+}

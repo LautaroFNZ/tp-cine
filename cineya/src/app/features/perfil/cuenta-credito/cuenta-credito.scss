@@ -1,0 +1,77 @@
+h2 {
+  margin: 0 0 1rem;
+}
+.aviso {
+  margin: 0.5rem 0 0;
+  color: var(--color-texto-suave);
+}
+
+.saldo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 460px;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-top: 3px solid var(--color-acento);
+  border-radius: var(--radio);
+}
+.rotulo {
+  color: var(--color-texto-suave);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.cifra {
+  font-family: var(--fuente-titulos);
+  font-size: 3.2rem;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.03em;
+}
+
+.bloque {
+  max-width: 640px;
+}
+.titulo {
+  margin: 0 0 0.75rem;
+  font-size: 1.6rem;
+}
+
+.movimientos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.movimientos li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+.movimientos li div {
+  display: flex;
+  flex-direction: column;
+}
+.fecha {
+  color: var(--color-texto-suave);
+  font-size: 0.82rem;
+}
+.monto {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--color-texto-suave);
+}
+.monto.positivo {
+  color: var(--color-exito);
+}

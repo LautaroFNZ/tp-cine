@@ -12,12 +12,17 @@ export class CompraService {
       .select(`
         id,
         codigo:code,
+        estadoCompra:status,
         total,
-        creadaEn:created_at,
-        metodoPago:payment_method,
         subtotal,
         descuento:discount_amount,
         descuentoEtiqueta:discount_label,
+        creditoPuntos:reward_credit,
+        puntosGanados:points_earned,
+        creditoUsado:credit_used,
+        creditoDevuelto:credit_refunded,
+        creadaEn:created_at,
+        metodoPago:payment_method,
         entradaUsadaEn:entry_validated_at,
         candyEntregadoEn:candy_delivered_at,
         entradas:tickets(
@@ -35,6 +40,7 @@ export class CompraService {
         productos:purchase_items(
           cantidad:quantity,
           precioUnitario:unit_price,
+          puntos:points_spent,
           producto:products(name)
         )
       `)
@@ -56,11 +62,16 @@ export class CompraService {
           id: fila.id,
           codigo: fila.codigo,
           total: Number(fila.total),
-          creadaEn: fila.creadaEn,
-          metodoPago: fila.metodoPago,
           subtotal: fila.subtotal !== null ? Number(fila.subtotal) : Number(fila.total),
           descuento: Number(fila.descuento ?? 0),
           descuentoEtiqueta: fila.descuentoEtiqueta,
+          creditoPuntos: Number(fila.creditoPuntos ?? 0),
+          puntosGanados: Number(fila.puntosGanados ?? 0),
+          creditoUsado: Number(fila.creditoUsado ?? 0),
+          creditoDevuelto: Number(fila.creditoDevuelto ?? 0),
+          cancelada: fila.estadoCompra === 'cancelled',
+          creadaEn: fila.creadaEn,
+          metodoPago: fila.metodoPago,
           entradaUsada: !!fila.entradaUsadaEn,
           candyEntregado: !!fila.candyEntregadoEn,
           pelicula: funcion.pelicula?.title ?? '',
@@ -81,7 +92,8 @@ export class CompraService {
           productos: (fila.productos ?? []).map((item: any) => ({
             nombre: item.producto?.name ?? 'Producto',
             cantidad: item.cantidad,
-            precioUnitario: Number(item.precioUnitario)
+            precioUnitario: Number(item.precioUnitario),
+            puntos: Number(item.puntos ?? 0)
           }))
         };
       });

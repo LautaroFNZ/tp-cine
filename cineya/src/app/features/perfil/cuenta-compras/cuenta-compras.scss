@@ -147,3 +147,26 @@ footer {
   justify-content: flex-end;
   gap: 0.4rem;
 }
+
+.exito {
+  margin: 0 0 1rem;
+  color: var(--color-exito);
+  font-weight: 600;
+}
+
+.acciones-compra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--color-borde);
+}
+.acciones-compra button {
+  padding: 0.3rem 0.9rem;
+  font-weight: 500;
+}
+.ayuda {
+  color: var(--color-texto-suave);
+  font-size: 0.82rem;
+}

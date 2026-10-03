@@ -84,6 +84,17 @@ export function construirPdfEntrada(doc: jsPDF, compra: Compra, qr: string): jsP
     y += 6.5;
   }
 
+  // Entradas canjeadas con puntos
+  if (compra.creditoPuntos && compra.creditoPuntos > 0) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.setTextColor(...NEGRO);
+    doc.text('Entradas canjeadas con puntos', margen, y);
+    doc.setTextColor(...GRIS);
+    doc.text(`- ${moneda(compra.creditoPuntos)}`, derecha, y, { align: 'right' });
+    y += 6.5;
+  }
+
   // Candy bar
   if (compra.productos.length > 0) {
     y += 3;
@@ -94,7 +105,12 @@ export function construirPdfEntrada(doc: jsPDF, compra: Compra, qr: string): jsP
       doc.setTextColor(...NEGRO);
       doc.text(`${producto.cantidad} x ${producto.nombre}`, margen, y);
       doc.setTextColor(...GRIS);
-      doc.text(moneda(producto.precioUnitario * producto.cantidad), derecha, y, { align: 'right' });
+      doc.text(
+        producto.puntos ? `Canje - ${producto.puntos} puntos` : moneda(producto.precioUnitario * producto.cantidad),
+        derecha,
+        y,
+        { align: 'right' }
+      );
       y += 6.5;
     }
   }

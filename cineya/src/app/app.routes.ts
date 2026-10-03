@@ -67,6 +67,16 @@ export const routes: Routes = [
         path: 'compras',
         loadComponent: () =>
           import('./features/perfil/cuenta-compras/cuenta-compras').then(m => m.CuentaCompras)
+      },
+      {
+        path: 'puntos',
+        loadComponent: () =>
+          import('./features/perfil/cuenta-puntos/cuenta-puntos').then(m => m.CuentaPuntos)
+      },
+      {
+        path: 'credito',
+        loadComponent: () =>
+          import('./features/perfil/cuenta-credito/cuenta-credito').then(m => m.CuentaCredito)
       }
     ]
   },
@@ -103,7 +113,12 @@ export const routes: Routes = [
         path: 'cupones',
         loadComponent: () =>
           import('./features/admin/cupones-admin/cupones-admin').then(m => m.CuponesAdmin)
-      }
+      },
+      {
+        path: 'puntos',
+        loadComponent: () =>
+          import('./features/admin/puntos-admin/puntos-admin').then(m => m.PuntosAdmin)
+      }  
     ]
   },
   {

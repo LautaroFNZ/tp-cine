@@ -43,6 +43,9 @@
     } @else if (estadoFuncion() === 'terminada') {
       <p class="alerta">La función de esta entrada ya terminó. Ya no se puede validar.</p>
     }
+    @if (c.cancelada) {
+      <p class="alerta">Esta compra fue cancelada: el código ya no sirve para entrar ni para retirar productos.</p>
+    }
     @if (edadMinima() > 0) {
       <p class="alerta">Película para mayores de {{ edadMinima() }} años. Debe asistir un adulto.</p>
     }
@@ -76,9 +79,9 @@
       <div class="acciones">
         <div class="bloque-accion">
           <span class="estado" [class.usada]="c.entradaUsada">
-            {{ c.entradaUsada ? 'Entrada utilizada' : 'Entrada válida' }}
+              {{ c.cancelada ? 'Compra cancelada' : c.entradaUsada ? 'Entrada utilizada' : 'Entrada válida' }}
           </span>
-          <button type="button" [disabled]="procesando() || c.entradaUsada || estadoFuncion() !== 'hoy'" (click)="validarEntrada()">
+          <button type="button" [disabled]="procesando() || c.entradaUsada || c.cancelada || estadoFuncion() !== 'hoy'" (click)="validarEntrada()">
             Validar entrada
           </button>
         </div>
@@ -88,7 +91,7 @@
             <span class="estado" [class.usada]="c.candyEntregado">
               {{ c.candyEntregado ? 'Candy retirado' : 'Candy pendiente' }}
             </span>
-            <button type="button" [disabled]="procesando() || c.candyEntregado || estadoFuncion() !== 'hoy'" (click)="entregarCandy()">
+            <button type="button" [disabled]="procesando() || c.candyEntregado || c.cancelada || estadoFuncion() !== 'hoy'" (click)="entregarCandy()">
               Entregar productos
             </button>
           </div>

@@ -12,6 +12,7 @@ export interface ProductoCompra {
   nombre: string;
   cantidad: number;
   precioUnitario: number;
+  puntos?: number;
 }
 
 export interface Compra {
@@ -34,4 +35,9 @@ export interface Compra {
   subtotal?: number;
   descuento?: number;
   descuentoEtiqueta?: string | null;
+  creditoPuntos?: number;
+  puntosGanados?: number;
+  cancelada?: boolean;
+  creditoUsado?: number;
+  creditoDevuelto?: number;
 }

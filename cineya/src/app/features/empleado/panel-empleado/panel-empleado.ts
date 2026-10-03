@@ -155,7 +155,8 @@ export class PanelEmpleado {
         NO_ENCONTRADA: 'No hay ninguna compra con ese código.',
         SIN_PERMISO: 'Tu usuario no tiene permiso para validar entradas.',
         OTRO_DIA: 'Esta entrada es para otro día: solo se puede validar el día de la función.',
-        FUNCION_TERMINADA: 'La función de esta entrada ya terminó.'
+        FUNCION_TERMINADA: 'La función de esta entrada ya terminó.',
+        CANCELADA: 'Esta compra fue cancelada: el código ya no sirve.',
       };
       this.error.set(mensajes[error?.message] ?? 'No se pudo completar la operación. Probá de nuevo.');
     } finally {

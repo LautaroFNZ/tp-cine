@@ -1,7 +1,15 @@
 @if (codigo()) {
   <section class="exito-compra">
     <h2>¡Compra realizada!</h2>
-    <p>Pagaste {{ totalPagado() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}.</p>
+    <p>El total de tu compra fue {{ totalCompra() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}.</p>
+    @if (pagadoConCredito() > 0) {
+      <p>
+        Pagaste {{ pagadoConCredito() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }} con tu crédito.
+      </p>
+    }
+    @if (puntosGanados() > 0) {
+      <p class="exito">Sumaste {{ puntosGanados() | number: '1.0-0' : 'es-AR' }} puntos con esta compra.</p>
+    }
     <p>
       Este es el código de tu compra. Presentalo para entrar a la sala y para retirar tus productos:
     </p>
@@ -24,8 +32,8 @@
         <span class="titulo-bloque">Cupón de descuento</span>
         @if (!auth.estaAutenticado()) {
           <p class="aviso">
-            Para recibir el descuento de bienvenida o usar un cupón, tenés que registrarte e iniciar
-            sesión antes de comprar.
+            Para recibir el descuento de bienvenida, usar un cupón, sumar puntos o usar crédito, tenés que
+            registrarte e iniciar sesión antes de comprar.
           </p>
         } @else {
           <div class="fila-cupon">
@@ -52,17 +60,96 @@
         }
       </div>
 
-      <fieldset class="metodos">
-        <legend>Método de pago</legend>
-        @for (m of metodos; track m.valor) {
-          <label class="metodo" [class.elegido]="metodo() === m.valor">
-            <input type="radio" name="metodo"
-                   [checked]="metodo() === m.valor"
-                   (change)="metodo.set(m.valor)">
-            {{ m.texto }}
-          </label>
+      @if (auth.estaAutenticado()) {
+        <div class="puntos">
+          <span class="titulo-bloque">Tus puntos</span>
+          <p class="saldo">
+            <strong>{{ puntosDisponibles() | number: '1.0-0' : 'es-AR' }}</strong> puntos disponibles
+          </p>
+
+          @if (recompensas().length === 0) {
+            <p class="aviso">Por el momento no hay recompensas para canjear.</p>
+          } @else {
+            <ul class="recompensas">
+              @for (recompensa of recompensas(); track recompensa.id) {
+                <li [class.elegida]="cantidadCanje(recompensa.id) > 0">
+                  <div class="detalle-recompensa">
+                    <span class="nombre-recompensa">{{ recompensa.nombre }}</span>
+                    <span class="costo">{{ recompensa.puntos | number: '1.0-0' : 'es-AR' }} puntos</span>
+                  </div>
+                  <div class="canje">
+                    @if (cantidadCanje(recompensa.id) === 0) {
+                      <button type="button" class="secundario"
+                              [disabled]="!puedeCanjear(recompensa) || pagando()"
+                              (click)="canjear(recompensa)">
+                        Canjear
+                      </button>
+                    } @else {
+                      <button type="button" class="secundario" aria-label="Quitar uno"
+                              [disabled]="pagando()" (click)="quitarCanje(recompensa)">−</button>
+                      <strong>{{ cantidadCanje(recompensa.id) }}</strong>
+                      <button type="button" aria-label="Sumar uno"
+                              [disabled]="!puedeCanjear(recompensa) || pagando()"
+                              (click)="canjear(recompensa)">+</button>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+            <p class="ayuda">
+              Cada entrada gratis reemplaza el precio base de una butaca (el recargo de una butaca VIP
+              se paga aparte). Los productos canjeados se retiran en el candy bar con el mismo código.
+            </p>
+          }
+
+          <p class="ayuda">
+            Ganás 1 punto por cada peso que pagás. Con esta compra sumarías
+            {{ puntosAGanar() | number: '1.0-0' : 'es-AR' }} puntos.
+          </p>
+        </div>
+
+        @if (saldoCredito() > 0) {
+          <div class="credito">
+            <span class="titulo-bloque">Tu crédito</span>
+            <label class="usar-credito" [class.elegido]="usaCredito()">
+              <input type="checkbox" [checked]="usaCredito()" [disabled]="pagando()"
+                     (change)="alternarCredito($any($event.target).checked)">
+              <span>
+                Usar mi crédito de
+                <strong>{{ saldoCredito() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
+              </span>
+            </label>
+            @if (usaCredito()) {
+              <p class="ayuda">
+                Se aplican {{ creditoAplicado() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                de tu crédito.
+                @if (aPagar() > 0) {
+                  El resto ({{ aPagar() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}) se paga con el
+                  método que elijas abajo.
+                }
+              </p>
+            }
+          </div>
         }
-      </fieldset>
+      }
+
+      @if (aPagar() > 0) {
+        <fieldset class="metodos">
+          <legend>Método de pago</legend>
+          @for (m of metodos; track m.valor) {
+            <label class="metodo" [class.elegido]="metodo() === m.valor">
+              <input type="radio" name="metodo"
+                     [checked]="metodo() === m.valor"
+                     (change)="metodo.set(m.valor)">
+              {{ m.texto }}
+            </label>
+          }
+        </fieldset>
+      } @else {
+        <p class="exito">
+          {{ creditoAplicado() > 0 ? 'Tu crédito cubre toda la compra.' : 'No tenés nada para pagar: la compra está cubierta con tus canjes.' }}
+        </p>
+      }
 
       @if (mensajeError()) {
         <p class="error">{{ mensajeError() }}</p>

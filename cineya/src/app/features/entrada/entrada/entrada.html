@@ -15,16 +15,20 @@
         </p>
       </div>
       <div class="estados">
-        <span class="estado" [class.usada]="c.entradaUsada || funcionFinalizada()">
-          {{ c.entradaUsada ? 'Entrada utilizada' : funcionFinalizada() ? 'Función finalizada' : 'Entrada válida' }}
+        <span class="estado" [class.usada]="c.cancelada || c.entradaUsada || funcionFinalizada()">
+          {{ c.cancelada ? 'Compra cancelada' : c.entradaUsada ? 'Entrada utilizada' : funcionFinalizada() ? 'Función finalizada' : 'Entrada válida' }}
         </span>
-        @if (c.productos.length > 0) {
+        @if (c.productos.length > 0 && !c.cancelada) {
           <span class="estado" [class.usada]="c.candyEntregado || funcionFinalizada()">
             {{ c.candyEntregado ? 'Candy retirado' : funcionFinalizada() ? 'Candy sin retirar' : 'Candy pendiente' }}
           </span>
         }
       </div>
     </header>
+
+    @if (c.cancelada) {
+      <p class="adulto">Esta compra fue cancelada: el código ya no sirve para entrar ni para retirar productos.</p>
+    }
 
     @if (edadMinima() > 0) {
       <p class="adulto">Película para mayores de {{ edadMinima() }} años. Debe asistir un adulto.</p>
@@ -49,6 +53,14 @@
               </span>
             </li>
           }
+          @if (c.creditoPuntos) {
+            <li>
+              <span>Entradas canjeadas con puntos</span>
+              <span class="precio">
+                − {{ c.creditoPuntos | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+              </span>
+            </li>
+          }
         </ul>
 
         @if (c.productos.length > 0) {
@@ -58,7 +70,11 @@
               <li>
                 <span>{{ producto.cantidad }} × {{ producto.nombre }}</span>
                 <span class="precio">
-                  {{ (producto.precioUnitario * producto.cantidad) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                  @if (producto.puntos) {
+                    Canje · {{ producto.puntos }} puntos
+                  } @else {
+                    {{ (producto.precioUnitario * producto.cantidad) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                  }
                 </span>
               </li>
             }
@@ -81,17 +97,26 @@
           <span>Total</span>
           <strong>{{ c.total | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
         </p>
+        @if (c.creditoUsado) {
+          <p class="ayuda">
+            Pagado con crédito: {{ c.creditoUsado | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+          </p>
+        }
       </div>
 
       <div class="qr">
-        @if (qr()) {
-          <img [src]="qr()" alt="Código QR de tu entrada">
+        @if (c.cancelada) {
+          <p class="ayuda">Sin código disponible: la compra fue cancelada.</p>
+        } @else {
+          @if (qr()) {
+            <img [src]="qr()" alt="Código QR de tu entrada">
+          }
+          <strong class="codigo">{{ codigoFormateado() }}</strong>
+          <p class="ayuda">
+            Presentá este código en la entrada de la sala y en el candy bar. Una vez utilizado,
+            deja de ser válido.
+          </p>
         }
-        <strong class="codigo">{{ codigoFormateado() }}</strong>
-        <p class="ayuda">
-          Presentá este código en la entrada de la sala y en el candy bar. Una vez utilizado,
-          deja de ser válido.
-        </p>
       </div>
     </div>
 
@@ -101,7 +126,7 @@
 
     <div class="acciones">
       <a class="boton secundario" routerLink="/">Volver a la cartelera</a>
-      <button type="button" [disabled]="descargando() || !qr()" (click)="descargar()">
+      <button type="button" [disabled]="descargando() || !qr() || c.cancelada" (click)="descargar()">
         {{ descargando() ? 'Generando PDF...' : 'Descargar PDF' }}
       </button>
     </div>
