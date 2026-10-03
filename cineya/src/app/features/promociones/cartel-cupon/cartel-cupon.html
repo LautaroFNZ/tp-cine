@@ -1,0 +1,8 @@
+<app-dialogo-aviso #cartel
+                   [titulo]="'¡Obtené tu cupón de descuento de ' + porcentaje() + '% solo por registrarte!'"
+                   textoBoton="Registrarme"
+                   textoCancelar="No por ahora"
+                   (aceptado)="irARegistro()"
+                   (cancelado)="cerrar()">
+  <p>Es automático: se aplica a tu primera compra apenas tengas tu cuenta.</p>
+</app-dialogo-aviso>

@@ -65,6 +65,18 @@
           </ul>
         }
 
+        @if (c.descuento) {
+          <p class="rotulo">Descuento</p>
+          <ul>
+            <li>
+              <span>{{ c.descuentoEtiqueta }}</span>
+              <span class="precio">
+                − {{ c.descuento | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+              </span>
+            </li>
+          </ul>
+        }
+
         <p class="total">
           <span>Total</span>
           <strong>{{ c.total | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>

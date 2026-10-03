@@ -98,6 +98,11 @@ export const routes: Routes = [
         path: 'candy',
         loadComponent: () =>
           import('./features/admin/candy-admin/candy-admin').then(m => m.CandyAdmin)
+      },
+      {
+        path: 'cupones',
+        loadComponent: () =>
+          import('./features/admin/cupones-admin/cupones-admin').then(m => m.CuponesAdmin)
       }
     ]
   },

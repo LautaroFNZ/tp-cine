@@ -20,6 +20,38 @@
         Pago simulado: no se cobra nada ni se guardan datos de tarjeta.
       </p>
 
+      <div class="cupon">
+        <span class="titulo-bloque">Cupón de descuento</span>
+        @if (!auth.estaAutenticado()) {
+          <p class="aviso">
+            Para recibir el descuento de bienvenida o usar un cupón, tenés que registrarte e iniciar
+            sesión antes de comprar.
+          </p>
+        } @else {
+          <div class="fila-cupon">
+            <input type="text" placeholder="Código del cupón" autocomplete="off"
+                   [value]="cupon()"
+                   [disabled]="aplicandoCupon() || pagando()"
+                   (input)="cupon.set($any($event.target).value)"
+                   (keydown.enter)="$event.preventDefault(); aplicarCupon()">
+            <button type="button" class="secundario"
+                    [disabled]="aplicandoCupon() || pagando() || !cupon().trim()"
+                    (click)="aplicarCupon()">
+              Aplicar
+            </button>
+            @if (cuponValidado()) {
+              <button type="button" class="secundario" [disabled]="pagando()" (click)="quitarCupon()">Quitar</button>
+            }
+          </div>
+          @if (errorCupon()) {
+            <p class="error">{{ errorCupon() }}</p>
+          }
+          @if (mensajeCupon()) {
+            <p class="exito">{{ mensajeCupon() }}</p>
+          }
+        }
+      </div>
+
       <fieldset class="metodos">
         <legend>Método de pago</legend>
         @for (m of metodos; track m.valor) {

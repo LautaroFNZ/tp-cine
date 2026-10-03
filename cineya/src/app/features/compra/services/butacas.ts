@@ -114,23 +114,25 @@ export class ButacaService {
     if (error) console.error('Error al liberar la reserva', error);
   }
 
-  // Convierte la reserva en compra, con los productos elegidos. Devuelve el código de la compra.
+  // Convierte la reserva en compra, con los productos elegidos y el cupón (si hay).
+  // Devuelve el código de la compra.
   async comprar(
     funcionId: string,
     butacaIds: string[],
     items: ItemCompra[],
-    metodoPago: 'card' | 'wallet'
+    metodoPago: 'card' | 'wallet',
+    cupon: string | null = null
   ): Promise<ResultadoCompra> {
     const { data: filas, error } = await this.supabase.client.rpc('complete_purchase', {
       p_showtime_id: funcionId,
       p_seat_ids: butacaIds,
       p_token: this.token,
       p_items: items.map(item => ({ product_id: item.productoId, quantity: item.cantidad })),
-      p_payment_method: metodoPago
+      p_payment_method: metodoPago,
+      p_coupon_code: cupon
     });
 
     if (error) this.lanzarError(error.message);
-  
 
     const fila = filas?.[0];
     return { compraId: fila.out_purchase_id, codigo: fila.out_code };
@@ -180,6 +182,10 @@ export class ButacaService {
     if (mensaje.includes('login_required')) throw new Error('SESION_REQUERIDA');
     if (mensaje.includes('hold_expired')) throw new Error('RESERVA_VENCIDA');
     if (mensaje.includes('product_unavailable')) throw new Error('PRODUCTO_NO_DISPONIBLE');
+    if (mensaje.includes('coupon_invalid')) throw new Error('CUPON_INVALIDO');
+    if (mensaje.includes('coupon_login_required')) throw new Error('CUPON_SESION');
+    if (mensaje.includes('coupon_age')) throw new Error('CUPON_EDAD');
+    if (mensaje.includes('coupon_used')) throw new Error('CUPON_USADO');
     console.error('Error en la compra', mensaje);
     throw new Error(mensaje);
   }

@@ -1,0 +1,110 @@
+<ng-template #errores let-campo="campo">
+  @if (campo.touched() && campo.invalid()) {
+    @for (error of campo.errors(); track error) {
+      <p class="error">{{ error.message }}</p>
+    }
+  }
+</ng-template>
+
+<section class="bloque">
+  <h2>Descuento de bienvenida</h2>
+  <p class="aviso">
+    Se aplica automáticamente a la primera compra de cada usuario registrado. Podés cambiar el
+    porcentaje cuando quieras; con 0 se desactiva.
+  </p>
+
+  <div class="bienvenida">
+    <label>
+      Porcentaje (%)
+      <input type="number" min="0" max="100"
+             [value]="porcentajeBienvenida()"
+             (input)="alEscribirBienvenida($any($event.target).value)">
+    </label>
+    <button type="button" [disabled]="guardandoBienvenida()" (click)="guardarBienvenida()">Guardar</button>
+  </div>
+
+  @if (errorBienvenida()) {
+    <p class="error">{{ errorBienvenida() }}</p>
+  }
+  @if (mensajeBienvenida()) {
+    <p class="exito">{{ mensajeBienvenida() }}</p>
+  }
+</section>
+
+<section class="bloque">
+  <h2>Cupones</h2>
+  <p class="aviso">
+    Un cupón se aplica con su código en el pago, una sola vez por usuario. Con una edad mínima, solo lo
+    pueden usar quienes la cumplan (por ejemplo, 50 para un cupón de mayores de 50). No se suma al
+    descuento de bienvenida: se aplica el más conveniente.
+  </p>
+
+  <form class="formulario-tarjeta" novalidate (submit)="alEnviar($event)">
+    <h3>Nuevo cupón</h3>
+    <div class="fila">
+      <label>
+        Código
+        <input type="text" placeholder="MAYORES50" [formField]="formulario.codigo">
+      </label>
+      <label>
+        Descuento (%)
+        <input type="number" [formField]="formulario.porcentaje">
+      </label>
+      <label>
+        Edad mínima (0 = todas las edades)
+        <input type="number" [formField]="formulario.edadMinima">
+      </label>
+    </div>
+    <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.codigo() }" />
+    <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.porcentaje() }" />
+    <ng-container [ngTemplateOutlet]="errores" [ngTemplateOutletContext]="{ campo: formulario.edadMinima() }" />
+
+    @if (mensajeFormulario()) {
+      <p class="error">{{ mensajeFormulario() }}</p>
+    }
+    <div class="acciones">
+      <button type="submit" [disabled]="guardando()">Crear cupón</button>
+    </div>
+  </form>
+
+  @if (mensajeError()) {
+    <p class="error">{{ mensajeError() }}</p>
+  }
+
+  @if (cargando()) {
+    <p class="aviso">Cargando cupones...</p>
+  } @else if (cupones().length === 0) {
+    <p class="aviso">Todavía no hay cupones creados.</p>
+  } @else {
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descuento</th>
+            <th>Quién puede usarlo</th>
+            <th>Usos</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cupon of cupones(); track cupon.id) {
+            <tr [class.inactivo]="!cupon.activo">
+              <td><strong>{{ cupon.codigo }}</strong></td>
+              <td>{{ cupon.porcentaje }} %</td>
+              <td>{{ cupon.edadMinima ? 'Mayores de ' + cupon.edadMinima + ' años' : 'Todas las edades' }}</td>
+              <td>{{ cupon.usos }}</td>
+              <td>{{ cupon.activo ? 'Activo' : 'Inactivo' }}</td>
+              <td>
+                <button type="button" class="secundario" (click)="alternarEstado(cupon)">
+                  {{ cupon.activo ? 'Desactivar' : 'Activar' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

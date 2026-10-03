@@ -31,4 +31,7 @@ export interface Compra {
   productos: ProductoCompra[];
   entradaUsada?: boolean;
   candyEntregado?: boolean;
+  subtotal?: number;
+  descuento?: number;
+  descuentoEtiqueta?: string | null;
 }

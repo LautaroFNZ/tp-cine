@@ -9,15 +9,30 @@ export interface ItemCarrito {
   cantidad: number;
 }
 
+// Descuento que calculó la base de datos para la compra en curso
+export interface Descuento {
+  etiqueta: string;
+  porcentaje: number;
+  monto: number;
+}
+
 export interface EstadoCarrito {
   funcionId: string | null;
   butacas: Butaca[];
   items: ItemCarrito[];
+  descuento: Descuento | null;
   precios: PreciosFuncion | null;
   vence: number | null;   // instante (en milisegundos) en que vence la reserva
 }
 
-const VACIO: EstadoCarrito = { funcionId: null, butacas: [], items: [], precios: null, vence: null };
+const VACIO: EstadoCarrito = {
+  funcionId: null,
+  butacas: [],
+  items: [],
+  descuento: null,
+  precios: null,
+  vence: null
+};
 
 @Injectable({ providedIn: 'root' })
 export class CarritoService {
@@ -44,7 +59,14 @@ export class CarritoService {
           ? this.itemsPrevios.items
           : [];
     this.itemsPrevios = null;
-    this.estado.next({ funcionId, butacas, items, precios, vence: Date.now() + segundos * 1000 });
+    this.estado.next({
+      funcionId,
+      butacas,
+      items,
+      descuento: null,
+      precios,
+      vence: Date.now() + segundos * 1000
+    });
   }
 
   vaciar() {
@@ -84,7 +106,7 @@ export class CarritoService {
     );
   }
 
-  // Productos del candy bar
+  // Productos del candy bar. Al cambiar el pedido, el descuento calculado deja de valer
   cantidadDe(productoId: string): number {
     return this.valor.items.find(item => item.producto.id === productoId)?.cantidad ?? 0;
   }
@@ -97,7 +119,7 @@ export class CarritoService {
           item.producto.id === producto.id ? { ...item, cantidad: item.cantidad + 1 } : item
         )
       : [...actual.items, { producto, cantidad: 1 }];
-    this.estado.next({ ...actual, items });
+    this.estado.next({ ...actual, items, descuento: null });
   }
 
   quitarProducto(productoId: string) {
@@ -105,7 +127,11 @@ export class CarritoService {
     const items = actual.items
       .map(item => (item.producto.id === productoId ? { ...item, cantidad: item.cantidad - 1 } : item))
       .filter(item => item.cantidad > 0);
-    this.estado.next({ ...actual, items });
+    this.estado.next({ ...actual, items, descuento: null });
+  }
+
+  establecerDescuento(descuento: Descuento | null) {
+    this.estado.next({ ...this.valor, descuento });
   }
 
   // Precios y totales
@@ -122,7 +148,13 @@ export class CarritoService {
     return estado.items.reduce((suma, item) => suma + item.producto.precio * item.cantidad, 0);
   }
 
-  total(estado: EstadoCarrito): number {
+  // Entradas más productos, sin descuento
+  subtotal(estado: EstadoCarrito): number {
     return this.totalButacas(estado) + this.totalProductos(estado);
+  }
+
+  // Lo que se paga: el subtotal menos el descuento
+  total(estado: EstadoCarrito): number {
+    return this.subtotal(estado) - (estado.descuento?.monto ?? 0);
   }
 }

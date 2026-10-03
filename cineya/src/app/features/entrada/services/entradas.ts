@@ -41,7 +41,10 @@ export class EntradaService {
         precioUnitario: Number(item.unit_price)
       })),
       entradaUsada: data.entry_used,
-      candyEntregado: data.candy_delivered
+      candyEntregado: data.candy_delivered,
+      subtotal: Number(data.subtotal),
+      descuento: Number(data.discount_amount),
+      descuentoEtiqueta: data.discount_label
     };
   }
 

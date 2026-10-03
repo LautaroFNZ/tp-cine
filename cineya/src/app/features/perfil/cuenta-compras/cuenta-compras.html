@@ -50,6 +50,19 @@
           }
         </ul>
       }
+
+      @if (compra.descuento) {
+        <p class="rotulo">Descuento</p>
+        <ul>
+          <li>
+            <span>{{ compra.descuentoEtiqueta }}</span>
+            <span class="precio">
+              − {{ compra.descuento | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+            </span>
+          </li>
+        </ul>
+      }
+      
     </div>
 
     <footer>

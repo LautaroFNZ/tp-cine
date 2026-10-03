@@ -4,10 +4,10 @@
   <nav>
     @if (auth.estaAutenticado()) {
       @if (auth.esAdmin()) {
-        <a routerLink="/admin">Administración</a>
+        <a routerLink="/admin">ADMINISTRACIÓN</a>
       }
       @if (auth.esEmpleado() || auth.esAdmin()) {
-        <a routerLink="/empleado">Empleados</a>
+        <a routerLink="/empleado">EMPLEADOS</a>
       }
 
       <div class="menu-usuario">
@@ -35,8 +35,8 @@
         }
       </div>
     } @else {
-      <a routerLink="/login">Ingresar</a>
-      <a routerLink="/registro">Registrarme</a>
+      <a routerLink="/login">INGRESAR</a>
+      <a routerLink="/registro">REGISTRAME</a>
     }
   </nav>
 </header>
@@ -44,3 +44,5 @@
 <main class="contenido">
   <router-outlet />
 </main>
+
+<app-cartel-cupon />

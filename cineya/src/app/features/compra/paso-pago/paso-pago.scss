@@ -1,6 +1,32 @@
 .aviso {
   color: var(--color-texto-suave);
 }
+.exito {
+  margin: 0.5rem 0 0;
+  color: var(--color-exito);
+  font-weight: 600;
+}
+
+.cupon {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 520px;
+  margin-top: 1.25rem;
+}
+.titulo-bloque {
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+}
+.fila-cupon {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.fila-cupon input {
+  flex: 1 1 200px;
+  text-transform: uppercase;
+}
 
 .metodos {
   display: flex;
@@ -49,7 +75,6 @@
   font-size: 2.4rem;
   letter-spacing: 0.15em;
 }
-
 .acciones-exito {
   display: flex;
   flex-wrap: wrap;

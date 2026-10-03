@@ -99,6 +99,19 @@ export function construirPdfEntrada(doc: jsPDF, compra: Compra, qr: string): jsP
     }
   }
 
+  // Descuento
+  if (compra.descuento && compra.descuento > 0) {
+    y += 3;
+    y = seccion(doc, 'DESCUENTO', y, margen, derecha);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.setTextColor(...NEGRO);
+    doc.text(compra.descuentoEtiqueta ?? 'Descuento', margen, y);
+    doc.setTextColor(...GRIS);
+    doc.text(`- ${moneda(compra.descuento)}`, derecha, y, { align: 'right' });
+    y += 6.5;
+  }
+
   // Total
   y += 2;
   doc.setDrawColor(200, 200, 200);
