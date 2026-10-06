@@ -210,6 +210,7 @@ export class ButacaService {
     if (mensaje.includes('hold_expired')) throw new Error('RESERVA_VENCIDA');
     if (mensaje.includes('combo_unavailable')) throw new Error('COMBO_NO_DISPONIBLE');
     if (mensaje.includes('combo_exceeds_seats')) throw new Error('COMBO_EXCEDE');
+    if (mensaje.includes('sale_not_open')) throw new Error('VENTA_NO_ABIERTA');
     console.error('Error en la compra', mensaje);
     throw new Error(mensaje);
   }

@@ -1,0 +1,168 @@
+<!-- El ranking se define una sola vez y se usa en los tres gráficos de barras horizontales -->
+<ng-template #ranking let-lista let-maximo="maximo" let-unidad="unidad">
+  @if (lista.length === 0) {
+    <p class="sin-datos">Sin ventas en el período.</p>
+  } @else {
+    <ol class="ranking">
+      @for (item of lista; track item.id; let i = $index) {
+        <li>
+          <div class="fila-ranking">
+            <span class="nombre">{{ i + 1 }}. {{ item.nombre }}</span>
+            <span class="valor">{{ item.cantidad }} {{ unidad }}</span>
+          </div>
+          <div class="barra" aria-hidden="true">
+            <div class="relleno" [class.primero]="i === 0" [ngStyle]="{ width: ancho(item.cantidad, maximo) + '%' }"></div>
+          </div>
+        </li>
+      }
+    </ol>
+  }
+</ng-template>
+
+<section class="encabezado">
+  <div>
+    <h2>Reportes</h2>
+    <p class="aviso">
+      Facturación y ventas por día, películas y productos más vendidos. No incluye las compras canceladas.
+    </p>
+  </div>
+  <div class="exportar">
+    <button type="button" class="secundario"
+            [disabled]="!rangoMostrado() || exportando() !== null || cargando()"
+            (click)="exportarPdf()">
+      {{ exportando() === 'pdf' ? 'Generando PDF...' : 'Exportar a PDF' }}
+    </button>
+    <button type="button" class="secundario"
+            [disabled]="!rangoMostrado() || exportando() !== null || cargando()"
+            (click)="exportarExcel()">
+      {{ exportando() === 'excel' ? 'Generando Excel...' : 'Exportar a Excel' }}
+    </button>
+  </div>
+</section>
+
+<section class="filtros">
+  <label>
+    Desde
+    <input type="date" [value]="desde()" [max]="hasta()" (change)="desde.set($any($event.target).value)">
+  </label>
+  <label>
+    Hasta
+    <input type="date" [value]="hasta()" (change)="hasta.set($any($event.target).value)">
+  </label>
+  <button type="button" [disabled]="cargando()" (click)="generar()">
+    {{ cargando() ? 'Generando...' : 'Generar reporte' }}
+  </button>
+
+  <div class="atajos">
+    <button type="button" class="secundario" (click)="rangoRapido('hoy')">Hoy</button>
+    <button type="button" class="secundario" (click)="rangoRapido('semana')">Últimos 7 días</button>
+    <button type="button" class="secundario" (click)="rangoRapido('mes')">Este mes</button>
+  </div>
+</section>
+
+@if (mensajeError()) {
+  <p class="error">{{ mensajeError() }}</p>
+}
+
+@if (rangoMostrado(); as rango) {
+  <p class="periodo">
+    Período: del <strong>{{ formatoDia(rango.desde) }}</strong> al <strong>{{ formatoDia(rango.hasta) }}</strong>
+  </p>
+
+  <section class="totales">
+    <div class="total">
+      <span class="rotulo">Facturado</span>
+      <strong>{{ totalFacturado() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
+    </div>
+    <div class="total">
+      <span class="rotulo">Entradas vendidas</span>
+      <strong>{{ totalEntradas() }}</strong>
+    </div>
+    <div class="total">
+      <span class="rotulo">Compras</span>
+      <strong>{{ totalCompras() }}</strong>
+    </div>
+    <div class="total">
+      <span class="rotulo">Promedio por compra</span>
+      <strong>{{ promedioCompra() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h3>Facturación por día</h3>
+    @if (totalCompras() === 0) {
+      <p class="sin-datos">No hubo ventas en este período.</p>
+    } @else {
+      <div class="grafico-dias" role="img" aria-label="Gráfico de facturación por día">
+        @for (venta of ventas(); track venta.dia) {
+          <div class="columna" [title]="descripcionDia(venta)">
+            <div class="espacio-barra">
+              <div class="barra-dia" [ngStyle]="{ height: altura(venta.facturado) + '%' }"></div>
+            </div>
+            <span class="etiqueta-dia">{{ diaDelMes(venta.dia) }}</span>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Día</th>
+            <th class="numero">Compras</th>
+            <th class="numero">Entradas</th>
+            <th class="numero">Facturado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (venta of ventas(); track venta.dia) {
+            <tr [class.sin-ventas]="venta.compras === 0">
+              <td>{{ formatoDia(venta.dia) }}</td>
+              <td class="numero">{{ venta.compras }}</td>
+              <td class="numero">{{ venta.entradas }}</td>
+              <td class="numero">{{ venta.facturado | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td class="numero">{{ totalCompras() }}</td>
+            <td class="numero">{{ totalEntradas() }}</td>
+            <td class="numero">{{ totalFacturado() | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section class="rankings">
+    <div class="tarjeta">
+      <h3>Películas más vendidas por semana</h3>
+      <p class="nota">Últimos 7 días</p>
+      <ng-container [ngTemplateOutlet]="ranking"
+                    [ngTemplateOutletContext]="{ $implicit: peliculasSemana(), maximo: maxSemana(), unidad: 'entradas' }" />
+    </div>
+
+    <div class="tarjeta">
+      <h3>Películas más vendidas por mes</h3>
+      <p class="nota">Últimos 30 días</p>
+      <ng-container [ngTemplateOutlet]="ranking"
+                    [ngTemplateOutletContext]="{ $implicit: peliculasMes(), maximo: maxMes(), unidad: 'entradas' }" />
+    </div>
+
+    <div class="tarjeta">
+      <h3>Productos del candy bar más vendidos</h3>
+      @if (productos()[0]; as principal) {
+        <p class="nota">
+          El más vendido del período: <strong>{{ principal.nombre }}</strong> ({{ principal.cantidad }} unidades)
+        </p>
+      } @else {
+        <p class="nota">Del período elegido</p>
+      }
+      <ng-container [ngTemplateOutlet]="ranking"
+                    [ngTemplateOutletContext]="{ $implicit: productos(), maximo: maxProductos(), unidad: 'unidades' }" />
+    </div>
+  </section>
+}

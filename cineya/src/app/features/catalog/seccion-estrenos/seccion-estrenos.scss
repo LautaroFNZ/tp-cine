@@ -1,0 +1,137 @@
+:host {
+  display: block;
+}
+
+.seccion {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-borde);
+  // Al bajar desde el menú, el título no queda tapado por la barra fija de arriba
+  scroll-margin-top: 5rem;
+}
+.titulo-seccion {
+  margin: 0 0 0.35rem;
+  font-size: 2rem;
+}
+.intro,
+.aviso {
+  margin: 0 0 1.5rem;
+  max-width: 680px;
+  color: var(--color-texto-suave);
+}
+.subtitulo {
+  margin: 1.5rem 0 1rem;
+  font-size: 1.5rem;
+}
+
+.grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.25rem;
+}
+
+.estreno {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+.enlace-poster {
+  display: block;
+}
+.enlace-poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 210px;
+  object-fit: cover;
+}
+
+.datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.9rem 1rem;
+}
+.datos h4 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+.datos p {
+  margin: 0;
+}
+.meta,
+.fecha,
+.venta {
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+}
+.fecha strong,
+.venta strong {
+  color: var(--color-texto);
+}
+.venta.abierta {
+  color: var(--color-exito);
+  font-weight: 600;
+}
+.precio {
+  font-size: 0.95rem;
+}
+
+.insignia {
+  align-self: flex-start;
+  padding: 0.1rem 0.7rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 999px;
+  color: var(--color-texto-suave);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.insignia.preventa {
+  background: var(--color-acento);
+  border-color: var(--color-acento);
+  color: var(--color-acento-texto);
+}
+
+.generos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.etiqueta {
+  padding: 0 0.55rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 999px;
+  color: var(--color-texto-suave);
+  font-size: 0.75rem;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+.acciones button,
+.acciones .boton {
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+}
+.ayuda {
+  color: var(--color-texto-suave);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 520px) {
+  .grilla {
+    grid-template-columns: 1fr;
+  }
+  .estreno {
+    grid-template-columns: 105px 1fr;
+  }
+}

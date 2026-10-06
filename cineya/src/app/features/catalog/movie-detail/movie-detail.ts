@@ -12,6 +12,7 @@ import { Review } from '../../../core/models/review.model';
 import { Funcion } from '../../../core/models/funcion.model';
 import { fechaLocal } from '../../../shared/utils/fechas';
 import { EdadMinimaPipe } from '../../../shared/pipes/edad-minima-pipe';
+import { AvisoVenta } from '../../../shared/components/aviso-venta/aviso-venta';
 
 registerLocaleData(localeEsAr);
 
@@ -28,7 +29,7 @@ interface GrupoFunciones {
 
 @Component({
   selector: 'app-movie-detail',
-  imports: [RouterLink, FormField, DatePipe, EdadMinimaPipe],
+  imports: [RouterLink, FormField, DatePipe, EdadMinimaPipe, AvisoVenta],
   templateUrl: './movie-detail.html',
   styleUrl: './movie-detail.scss'
 })

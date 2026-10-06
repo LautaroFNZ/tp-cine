@@ -201,6 +201,8 @@ export class PasoButacas implements OnInit, OnDestroy {
         this.aviso.set('No cumplís la edad mínima para esta película.');
       } else if (error?.message === 'SESION_REQUERIDA') {
         this.aviso.set('Iniciá sesión para comprar entradas de esta película.');
+      } else if (error?.message === 'VENTA_NO_ABIERTA') {
+        this.aviso.set('La venta de entradas de esta película todavía no abrió.');  
       } else {
         this.aviso.set('No se pudieron reservar las butacas. Probá de nuevo.');
       }

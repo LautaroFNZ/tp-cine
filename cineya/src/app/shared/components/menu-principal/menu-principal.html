@@ -1,0 +1,60 @@
+<nav class="menu-principal" aria-label="Secciones">
+  <div class="grupo" appClickAfuera (clickAfuera)="seccionesAbierto.set(false)">
+    <button type="button"
+            class="boton-menu"
+            [ngClass]="{ activo: enPrincipal(), abierto: seccionesAbierto() }"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="seccionesAbierto()"
+            (click)="alternarSecciones()"> PELICULAS
+      <span class="flecha" aria-hidden="true">▾</span>
+    </button>
+
+    @if (seccionesAbierto()) {
+      <div class="desplegable" role="menu">
+        <button type="button" role="menuitem" (click)="irASeccion('cartelera')">Cartelera</button>
+        <button type="button" role="menuitem" (click)="irASeccion('estrenos')">Estrenos</button>
+      </div>
+    }
+  </div>
+
+  @if (auth.estaAutenticado()) {
+    <div class="grupo campana" appClickAfuera (clickAfuera)="campanaAbierta.set(false)">
+      <button type="button"
+              class="boton-campana"
+              aria-label="Avisos de estrenos"
+              aria-haspopup="menu"
+              [attr.aria-expanded]="campanaAbierta()"
+              (click)="alternarCampana()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+        </svg>
+        @if (pendientes().length > 0) {
+          <span class="contador">{{ pendientes().length }}</span>
+        }
+      </button>
+
+      @if (campanaAbierta()) {
+        <div class="desplegable derecha" role="menu">
+          @if (pendientes().length === 0) {
+            <p class="vacio">
+              No tenés avisos nuevos. Activá una alerta desde
+              <a routerLink="/" fragment="estrenos" (click)="cerrarMenus()">Estrenos</a>
+              y te avisamos cuando abra la venta.
+            </p>
+          } @else {
+            @for (alerta of pendientes(); track alerta.peliculaId) {
+              <a role="menuitem" class="aviso-estreno"
+                 [routerLink]="['/pelicula', alerta.peliculaId]"
+                 (click)="abrirAlerta(alerta)">
+                <strong>¡Ya hay entradas de {{ alerta.titulo }}!</strong>
+                <small>Se abrió la venta de preventa.</small>
+              </a>
+            }
+          }
+        </div>
+      }
+    </div>
+  }
+</nav>

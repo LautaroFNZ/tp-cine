@@ -123,7 +123,17 @@ export const routes: Routes = [
         path: 'combos',
         loadComponent: () =>
           import('./features/admin/combos-admin/combos-admin').then(m => m.CombosAdmin)
-      },  
+      },
+      {
+        path: 'reportes',
+        loadComponent: () =>
+          import('./features/admin/reportes-admin/reportes-admin').then(m => m.ReportesAdmin)
+      },
+      {
+        path: 'gestion-salas',
+        loadComponent: () =>
+          import('./features/admin/gestion-salas/gestion-salas').then(m => m.GestionSalas)
+      }  
     ]
   },
   {

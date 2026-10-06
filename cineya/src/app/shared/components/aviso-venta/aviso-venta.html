@@ -1,0 +1,13 @@
+@if (info.estado === 'proximamente') {
+  <p class="aviso-venta cerrada">
+    <strong>La venta de entradas todavía no abrió.</strong>
+    Abre el {{ info.ventaDesde | date: "d 'de' MMMM" : undefined : 'es-AR' }}, 7 días antes del estreno
+    ({{ info.estreno | date: "d 'de' MMMM" : undefined : 'es-AR' }}).
+    <a routerLink="/" fragment="estrenos">Activá una alerta en Estrenos</a> y te avisamos.
+  </p>
+} @else if (info.estado === 'preventa') {
+  <p class="aviso-venta preventa">
+    <strong>Preventa abierta.</strong>
+    La película se estrena el {{ info.estreno | date: "d 'de' MMMM" : undefined : 'es-AR' }}.
+  </p>
+}

@@ -118,3 +118,10 @@
 .calificacion small {
   color: var(--color-texto-suave);
 }
+
+.titulo-seccion {
+  margin: 2rem 0 1rem;
+  font-size: 2rem;
+  // Al bajar desde el menú, el título no queda tapado por la barra fija de arriba
+  scroll-margin-top: 5rem;
+}

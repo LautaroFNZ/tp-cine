@@ -1,0 +1,221 @@
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.encabezado h2 {
+  margin: 0 0 0.35rem;
+}
+.aviso {
+  margin: 0;
+  max-width: 640px;
+  color: var(--color-texto-suave);
+}
+.exportar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+.filtros label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+}
+.atajos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+.atajos button {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.periodo {
+  margin: 0 0 1rem;
+  color: var(--color-texto-suave);
+}
+.periodo strong {
+  color: var(--color-texto);
+}
+
+.totales {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.total {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-top: 3px solid var(--color-acento);
+  border-radius: var(--radio);
+}
+.rotulo {
+  color: var(--color-texto-suave);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.total strong {
+  font-family: var(--fuente-titulos);
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.tarjeta {
+  margin-bottom: 1.25rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+.tarjeta h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+}
+.nota,
+.sin-datos {
+  margin: 0 0 0.9rem;
+  color: var(--color-texto-suave);
+  font-size: 0.88rem;
+}
+.nota strong {
+  color: var(--color-texto);
+}
+
+// Gráfico de columnas: la altura de cada una la calcula el componente con ngStyle
+.grafico-dias {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 190px;
+  margin: 0.75rem 0 1.25rem;
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
+}
+.columna {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  min-width: 16px;
+  height: 100%;
+}
+.espacio-barra {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  width: 100%;
+}
+.barra-dia {
+  width: 100%;
+  background: var(--color-acento);
+  border-radius: 3px 3px 0 0;
+}
+.etiqueta-dia {
+  margin-top: 0.25rem;
+  color: var(--color-texto-suave);
+  font-size: 0.68rem;
+}
+
+.tabla-scroll {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+th,
+td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-borde);
+  text-align: left;
+}
+th {
+  color: var(--color-texto-suave);
+  font-weight: 500;
+}
+.numero {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+tr.sin-ventas td {
+  color: var(--color-texto-suave);
+}
+tfoot td {
+  border-top: 2px solid var(--color-borde);
+  border-bottom: 0;
+  font-weight: 600;
+}
+
+.rankings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+.rankings .tarjeta {
+  margin-bottom: 0;
+}
+.ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fila-ranking {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+.nombre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.valor {
+  color: var(--color-texto-suave);
+  white-space: nowrap;
+}
+.barra {
+  height: 7px;
+  background: var(--color-borde);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.relleno {
+  height: 100%;
+  background: var(--color-texto-suave);
+  border-radius: 999px;
+}
+.relleno.primero {
+  background: var(--color-acento);
+}

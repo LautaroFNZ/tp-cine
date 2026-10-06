@@ -1,0 +1,104 @@
+<!-- La tarjeta se define una sola vez y se usa en los dos grupos -->
+<ng-template #tarjeta let-item>
+  <article class="estreno">
+    <a class="enlace-poster" [routerLink]="['/pelicula', item.pelicula.id]">
+      <img [src]="item.pelicula.imagenUrl" [alt]="item.pelicula.titulo">
+    </a>
+
+    <div class="datos">
+      <span class="insignia" [ngClass]="{ preventa: item.estado === 'preventa' }">
+        {{ item.estado === 'preventa' ? 'Preventa abierta' : 'Próximamente' }}
+      </span>
+
+      <h4>{{ item.pelicula.titulo }}</h4>
+      <p class="meta">
+        {{ item.pelicula.duracionMinutos }} min · {{ item.pelicula.clasificacionEdad | edadMinima }}
+      </p>
+
+      @if (item.pelicula.generos?.length) {
+        <p class="generos">
+          @for (genero of item.pelicula.generos; track genero.id) {
+            <span class="etiqueta">{{ genero.nombre }}</span>
+          }
+        </p>
+      }
+
+      <p class="fecha">
+        Estreno: <strong>{{ item.estreno | date: "EEEE d 'de' MMMM" : undefined : 'es-AR' }}</strong>
+      </p>
+
+      @if (item.estado === 'preventa') {
+        <p class="venta abierta">Ya podés comprar entradas.</p>
+        @if (hayPrecioPreventa(item.pelicula)) {
+          <p class="precio">
+            Precio de preventa:
+            <strong>{{ item.pelicula.precioPreventa | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</strong>
+          </p>
+        }
+      } @else {
+        <p class="venta">
+          La venta abre el <strong>{{ item.ventaDesde | date: "d 'de' MMMM" : undefined : 'es-AR' }}</strong>.
+        </p>
+      }
+
+      <div class="acciones">
+        <a class="boton secundario" [routerLink]="['/pelicula', item.pelicula.id]">
+          {{ item.estado === 'preventa' ? 'Ver funciones' : 'Ver película' }}
+        </a>
+
+        @if (item.estado === 'proximamente') {
+          @if (auth.estaAutenticado()) {
+            <button type="button"
+                    [class.secundario]="!tieneAlerta(item.pelicula.id)"
+                    [disabled]="trabajando() === item.pelicula.id"
+                    (click)="alternarAlerta(item.pelicula.id)">
+              {{ tieneAlerta(item.pelicula.id) ? 'Alerta activada ✓' : 'Avisarme' }}
+            </button>
+          } @else {
+            <a class="boton secundario" routerLink="/login">Ingresá para activar la alerta</a>
+          }
+        }
+      </div>
+
+      @if (item.estado === 'proximamente' && auth.estaAutenticado() && tieneAlerta(item.pelicula.id)) {
+        <p class="ayuda">Te avisamos con la campana cuando abra la venta.</p>
+      }
+    </div>
+  </article>
+</ng-template>
+
+<section id="estrenos" class="seccion">
+  <h2 class="titulo-seccion">Estrenos</h2>
+  <p class="intro">
+    Las películas que llegan a la cartelera en las próximas semanas. La venta de entradas se abre
+    7 días antes del estreno, con un precio especial de preventa.
+  </p>
+
+  @if (mensajeError()) {
+    <p class="error">{{ mensajeError() }}</p>
+  }
+
+  @if (peliculas().length === 0) {
+    <p class="aviso">No hay estrenos programados por el momento.</p>
+  } @else if (estrenos().length === 0) {
+    <p class="aviso">Ningún estreno coincide con la búsqueda.</p>
+  } @else {
+    @if (enPreventa().length > 0) {
+      <h3 class="subtitulo">Preventa abierta</h3>
+      <div class="grilla">
+        @for (item of enPreventa(); track item.pelicula.id) {
+          <ng-container [ngTemplateOutlet]="tarjeta" [ngTemplateOutletContext]="{ $implicit: item }" />
+        }
+      </div>
+    }
+
+    @if (proximos().length > 0) {
+      <h3 class="subtitulo">Próximamente</h3>
+      <div class="grilla">
+        @for (item of proximos(); track item.pelicula.id) {
+          <ng-container [ngTemplateOutlet]="tarjeta" [ngTemplateOutletContext]="{ $implicit: item }" />
+        }
+      </div>
+    }
+  }
+</section>

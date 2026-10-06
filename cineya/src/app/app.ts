@@ -2,10 +2,11 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/services/auth';
 import { CartelCupon } from './features/promociones/cartel-cupon/cartel-cupon';
+import { MenuPrincipal } from './shared/components/menu-principal/menu-principal';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CartelCupon],
+  imports: [RouterOutlet, RouterLink, CartelCupon, MenuPrincipal],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

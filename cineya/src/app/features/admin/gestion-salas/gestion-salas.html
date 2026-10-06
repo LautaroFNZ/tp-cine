@@ -1,0 +1,70 @@
+<section class="encabezado">
+  <h2>Salas</h2>
+  <p class="aviso">
+    Todas las salas tienen la misma distribución: 546 butacas, con filas normales, una fila accesible
+    y tres filas VIP. Al agregar una sala, sus butacas se generan solas y la asignación automática
+    de funciones empieza a usarla. Por ahora las salas se pueden agregar, pero no dar de baja.
+  </p>
+</section>
+
+<section class="nueva-sala">
+  <h3>Agregar una sala</h3>
+
+  @if (nombrePendiente(); as nombre) {
+    <div class="confirmacion" role="alertdialog" aria-live="polite">
+      <p>
+        Se va a agregar la <strong>{{ nombre }}</strong>, con sus 546 butacas. ¿Confirmás?
+      </p>
+      <div class="acciones">
+        <button type="button" class="secundario" [disabled]="guardando()" (click)="cancelar()">Cancelar</button>
+        <button type="button" [disabled]="guardando()" (click)="confirmar()">
+          {{ guardando() ? 'Agregando...' : 'Confirmar' }}
+        </button>
+      </div>
+    </div>
+  } @else {
+    <p class="aviso">
+      La próxima sala se va a llamar <strong>{{ proximaSala() }}</strong>.
+    </p>
+    <button type="button" [disabled]="cargando() || cargaFallida()" (click)="pedirConfirmacion()">
+      Agregar {{ proximaSala() }}
+    </button>
+  }
+
+  @if (mensajeError()) {
+    <p class="error">{{ mensajeError() }}</p>
+  }
+  @if (mensajeExito()) {
+    <p class="exito">{{ mensajeExito() }}</p>
+  }
+</section>
+
+<h3 class="titulo-lista">Salas existentes</h3>
+
+@if (cargando()) {
+  <p class="aviso">Cargando salas...</p>
+} @else if (salas().length === 0) {
+  <p class="aviso">Todavía no hay salas creadas.</p>
+} @else {
+  <div class="tabla-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Sala</th>
+          <th class="numero">Butacas</th>
+          <th>Creada el</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (sala of salas(); track sala.id) {
+          <tr>
+            <td><strong>{{ sala.nombre }}</strong></td>
+            <td class="numero">{{ sala.butacas }}</td>
+            <td>{{ sala.creadaEn | date: 'dd/MM/yyyy' : undefined : 'es-AR' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="aviso pie">Total: {{ salas().length }} {{ salas().length === 1 ? 'sala' : 'salas' }}.</p>
+}

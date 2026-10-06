@@ -39,7 +39,7 @@
   </article>
   <section class="funciones">
     <h2>Funciones</h2>
-
+    <app-aviso-venta [fechaEstreno]="p.fechaEstreno" />
         @if (funcionesPorDia().length === 0) {
       <p class="aviso">Por el momento no hay funciones programadas.</p>
     } @else {
