@@ -1,12 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Butaca } from '../models/butaca.model';
+import { Combo } from '../models/combo.model';
 import { PreciosFuncion } from '../models/precios.model';
 import { Producto } from '../models/producto.model';
 import { Recompensa } from '../models/recompensa.model';
 
 export interface ItemCarrito {
   producto: Producto;
+  cantidad: number;
+}
+
+export interface ItemCombo {
+  combo: Combo;
   cantidad: number;
 }
 
@@ -33,6 +39,7 @@ export interface EstadoCarrito {
   funcionId: string | null;
   butacas: Butaca[];
   items: ItemCarrito[];
+  combos: ItemCombo[];
   canjes: ItemCanje[];
   descuento: Descuento | null;
   credito: CreditoCompra;
@@ -44,6 +51,7 @@ const VACIO: EstadoCarrito = {
   funcionId: null,
   butacas: [],
   items: [],
+  combos: [],
   canjes: [],
   descuento: null,
   credito: { saldo: 0, usar: false },
@@ -51,7 +59,7 @@ const VACIO: EstadoCarrito = {
   vence: null
 };
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CarritoService {
   private estado = new BehaviorSubject<EstadoCarrito>(VACIO);
   readonly estado$ = this.estado.asObservable();
@@ -59,7 +67,7 @@ export class CarritoService {
   private compraRealizada = new BehaviorSubject<boolean>(false);
   readonly compraRealizada$ = this.compraRealizada.asObservable();
   private seleccionPrevia: { funcionId: string; ids: string[] } | null = null;
-  private itemsPrevios: { funcionId: string; items: ItemCarrito[] } | null = null;
+  private pedidoPrevio: { funcionId: string; items: ItemCarrito[]; combos: ItemCombo[] } | null = null;
 
   get valor(): EstadoCarrito {
     return this.estado.value;
@@ -68,19 +76,25 @@ export class CarritoService {
   iniciar(funcionId: string, butacas: Butaca[], precios: PreciosFuncion | null, segundos: number) {
     this.compraRealizada.next(false);
     const actual = this.valor;
-    // Los productos elegidos se conservan si se vuelve a reservar para la misma función
-    const items =
+
+    // Los productos y combos elegidos se conservan si se vuelve a reservar para la misma función
+    const previo =
       actual.funcionId === funcionId
-        ? actual.items
-        : this.itemsPrevios?.funcionId === funcionId
-          ? this.itemsPrevios.items
-          : [];
-    this.itemsPrevios = null;
+        ? { items: actual.items, combos: actual.combos }
+        : this.pedidoPrevio?.funcionId === funcionId
+          ? { items: this.pedidoPrevio.items, combos: this.pedidoPrevio.combos }
+          : { items: [], combos: [] };
+    this.pedidoPrevio = null;
+
+    // Si ahora hay menos butacas que las entradas que cubren los combos, los combos se descartan
+    const combos = this.entradasEnCombos(previo.combos) <= butacas.length ? previo.combos : [];
+
     // Los canjes y el crédito se eligen en el pago, así que cada reserva nueva empieza sin ellos
     this.estado.next({
       funcionId,
       butacas,
-      items,
+      items: previo.items,
+      combos,
       canjes: [],
       descuento: null,
       credito: { saldo: 0, usar: false },
@@ -90,7 +104,7 @@ export class CarritoService {
   }
 
   vaciar() {
-    this.itemsPrevios = null;
+    this.pedidoPrevio = null;
     this.estado.next(VACIO);
   }
 
@@ -98,12 +112,12 @@ export class CarritoService {
     this.compraRealizada.next(realizada);
   }
 
-  // Suelta la reserva pero recuerda las butacas y los productos elegidos
+  // Suelta la reserva pero recuerda las butacas, los productos y los combos elegidos
   soltar() {
     const actual = this.valor;
     if (actual.funcionId) {
       this.seleccionPrevia = { funcionId: actual.funcionId, ids: actual.butacas.map(butaca => butaca.id) };
-      this.itemsPrevios = { funcionId: actual.funcionId, items: actual.items };
+      this.pedidoPrevio = { funcionId: actual.funcionId, items: actual.items, combos: actual.combos };
     }
     this.estado.next(VACIO);
   }
@@ -148,6 +162,45 @@ export class CarritoService {
       .map(item => (item.producto.id === productoId ? { ...item, cantidad: item.cantidad - 1 } : item))
       .filter(item => item.cantidad > 0);
     this.estado.next({ ...actual, items, descuento: null });
+  }
+
+  // Combos: cada uno incluye una o más entradas
+  entradasEnCombos(combos: ItemCombo[]): number {
+    return combos.reduce((suma, item) => suma + item.combo.entradasIncluidas * item.cantidad, 0);
+  }
+
+  // Butacas elegidas que todavía no están cubiertas ni por un combo ni por una entrada gratis.
+  // Los combos y las entradas canjeadas con puntos comparten el mismo cupo de butacas.
+  entradasLibres(estado: EstadoCarrito): number {
+    return estado.butacas.length - this.entradasEnCombos(estado.combos) - this.entradasCanjeadas(estado);
+  }
+
+  cantidadDeCombo(comboId: string): number {
+    return this.valor.combos.find(item => item.combo.id === comboId)?.cantidad ?? 0;
+  }
+
+  puedeAgregarCombo(combo: Combo): boolean {
+    return this.entradasLibres(this.valor) >= combo.entradasIncluidas;
+  }
+
+  agregarCombo(combo: Combo) {
+    if (!this.puedeAgregarCombo(combo)) return;
+    const actual = this.valor;
+    const existe = actual.combos.some(item => item.combo.id === combo.id);
+    const combos = existe
+      ? actual.combos.map(item =>
+          item.combo.id === combo.id ? { ...item, cantidad: item.cantidad + 1 } : item
+        )
+      : [...actual.combos, { combo, cantidad: 1 }];
+    this.estado.next({ ...actual, combos, descuento: null });
+  }
+
+  quitarCombo(comboId: string) {
+    const actual = this.valor;
+    const combos = actual.combos
+      .map(item => (item.combo.id === comboId ? { ...item, cantidad: item.cantidad - 1 } : item))
+      .filter(item => item.cantidad > 0);
+    this.estado.next({ ...actual, combos, descuento: null });
   }
 
   // Canjes con puntos
@@ -215,16 +268,30 @@ export class CarritoService {
     return estado.items.reduce((suma, item) => suma + item.producto.precio * item.cantidad, 0);
   }
 
+  totalCombos(estado: EstadoCarrito): number {
+    return estado.combos.reduce((suma, item) => suma + item.combo.precio * item.cantidad, 0);
+  }
+
   // Lo que valen las entradas canjeadas con puntos: se descuenta el precio base
   // (el recargo de una butaca VIP se paga aparte)
   creditoEntradasCanjeadas(estado: EstadoCarrito): number {
     return (estado.precios?.precioBase ?? 0) * this.entradasCanjeadas(estado);
   }
 
-  // Entradas y productos que se pagan, sin descuento
+  // Lo que valen las entradas que ya trae un combo: el combo las reemplaza por su precio.
+  // El recargo VIP tampoco se descuenta.
+  creditoCombos(estado: EstadoCarrito): number {
+    return (estado.precios?.precioBase ?? 0) * this.entradasEnCombos(estado.combos);
+  }
+
+  // Entradas, combos y productos que se pagan, sin descuento
   subtotal(estado: EstadoCarrito): number {
     return (
-      this.totalButacas(estado) - this.creditoEntradasCanjeadas(estado) + this.totalProductos(estado)
+      this.totalButacas(estado) -
+      this.creditoEntradasCanjeadas(estado) -
+      this.creditoCombos(estado) +
+      this.totalCombos(estado) +
+      this.totalProductos(estado)
     );
   }
 

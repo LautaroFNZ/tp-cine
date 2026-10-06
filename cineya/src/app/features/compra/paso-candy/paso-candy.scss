@@ -2,6 +2,106 @@
   color: var(--color-texto-suave);
 }
 
+/* Combos destacados */
+.bloque-combos {
+  margin: 1.25rem 0 2rem;
+  padding: 1.1rem;
+  background: rgba(227, 36, 43, 0.06);
+  border: 1px solid var(--color-acento);
+  border-radius: var(--radio);
+}
+.titulo-combos,
+.titulo-productos {
+  margin: 0 0 0.35rem;
+  font-size: 1.6rem;
+}
+.titulo-productos {
+  margin-top: 1.5rem;
+}
+.insignia {
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.6rem;
+  background: var(--color-acento);
+  color: var(--color-acento-texto);
+  border-radius: 999px;
+  font-family: var(--fuente-texto);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+.combos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+.combo {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+}
+.combo.elegido {
+  border-color: var(--color-acento);
+}
+.combo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+.datos-combo {
+  flex: 1;
+  padding: 0.85rem 0.95rem 0.25rem;
+}
+.etiqueta-combo {
+  display: inline-block;
+  padding: 0.05rem 0.55rem;
+  border: 1px solid var(--color-acento);
+  border-radius: 999px;
+  color: var(--color-acento);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+.datos-combo h4 {
+  margin: 0.4rem 0 0.2rem;
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+.incluye {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0.5rem 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+}
+.precio-combo {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.ahorro {
+  margin-left: 0.5rem;
+  color: var(--color-exito);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.bloqueo {
+  margin: 0;
+  padding: 0 0.95rem 0.75rem;
+  color: var(--color-texto-suave);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+/* Categorías y productos */
 .categorias {
   display: flex;
   flex-wrap: wrap;

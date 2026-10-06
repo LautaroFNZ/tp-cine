@@ -2,16 +2,77 @@
   <section>
     <h2>Candy bar</h2>
     <p class="aviso">
-      Sumá pochoclos, bebidas y golosinas a tu compra. Es opcional: podés seguir directo al pago.
+      Sumá combos, pochoclos, bebidas y golosinas a tu compra. Es opcional: podés seguir directo al pago.
     </p>
+
+    @if (combos().length > 0) {
+      <div class="bloque-combos">
+        <h3 class="titulo-combos">Combos <span class="insignia">Destacados</span></h3>
+        <p class="aviso">
+          Cada combo incluye entrada y reemplaza el precio base de la butaca. Si elegís una butaca VIP,
+          el recargo se paga aparte.
+        </p>
+
+        <div class="combos">
+          @for (combo of combos(); track combo.id) {
+            <article class="combo" [class.elegido]="cantidadCombo(combo.id) > 0">
+              @if (combo.imagenUrl) {
+                <img [src]="combo.imagenUrl" [alt]="combo.nombre">
+              }
+              <div class="datos-combo">
+                <span class="etiqueta-combo">COMBO</span>
+                <h4>{{ combo.nombre }}</h4>
+                @if (combo.descripcion) {
+                  <p class="descripcion">{{ combo.descripcion }}</p>
+                }
+                <ul class="incluye">
+                  <li>{{ combo.entradasIncluidas }} × {{ combo.entradasIncluidas === 1 ? 'Entrada' : 'Entradas' }}</li>
+                  @for (item of combo.incluye; track item.productoId) {
+                    <li>{{ item.cantidad }} × {{ item.nombre }}</li>
+                  }
+                </ul>
+                <p class="precio-combo">
+                  {{ combo.precio | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                  @if (ahorro(combo) > 0) {
+                    <span class="ahorro">Ahorrás {{ ahorro(combo) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}</span>
+                  }
+                </p>
+              </div>
+
+              <div class="cantidad">
+                @if (cantidadCombo(combo.id) === 0) {
+                  <button type="button" [disabled]="!puedeAgregarCombo(combo)" (click)="agregarCombo(combo)">Agregar</button>
+                } @else {
+                  <button type="button" class="secundario" aria-label="Quitar uno" (click)="quitarCombo(combo)">−</button>
+                  <strong>{{ cantidadCombo(combo.id) }}</strong>
+                  <button type="button" aria-label="Sumar uno" [disabled]="!puedeAgregarCombo(combo)" (click)="agregarCombo(combo)">+</button>
+                }
+              </div>
+              @if (!puedeAgregarCombo(combo)) {
+                <p class="bloqueo">
+                  @if (cantidadCombo(combo.id) === 0 && entradasLibres() === 0) {
+                    Todas tus entradas ya están cubiertas.
+                  } @else {
+                    Necesitás {{ combo.entradasIncluidas }} entradas libres para este combo.
+                  }
+                </p>
+              }
+            </article>
+          }
+        </div>
+      </div>
+    }
 
     @if (cargando()) {
       <p class="aviso">Cargando productos...</p>
     } @else if (mensajeError()) {
       <p class="error">{{ mensajeError() }}</p>
     } @else if (productos().length === 0) {
-      <p class="aviso">Por el momento no hay productos disponibles.</p>
+      @if (combos().length === 0) {
+        <p class="aviso">Por el momento no hay productos disponibles.</p>
+      }
     } @else {
+      <h3 class="titulo-productos">Productos</h3>
       <div class="categorias" role="group" aria-label="Categorías">
         <button type="button"
                 [class.activo]="categoriaElegida() === null"

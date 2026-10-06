@@ -18,7 +18,7 @@
         <span class="estado" [class.usada]="c.cancelada || c.entradaUsada || funcionFinalizada()">
           {{ c.cancelada ? 'Compra cancelada' : c.entradaUsada ? 'Entrada utilizada' : funcionFinalizada() ? 'Función finalizada' : 'Entrada válida' }}
         </span>
-        @if (c.productos.length > 0 && !c.cancelada) {
+        @if (tieneCandy() && !c.cancelada) {
           <span class="estado" [class.usada]="c.candyEntregado || funcionFinalizada()">
             {{ c.candyEntregado ? 'Candy retirado' : funcionFinalizada() ? 'Candy sin retirar' : 'Candy pendiente' }}
           </span>
@@ -62,6 +62,31 @@
             </li>
           }
         </ul>
+
+        @if (c.combos && c.combos.length > 0) {
+          <p class="rotulo">Combos</p>
+          <ul>
+            @for (combo of c.combos; track $index) {
+              <li>
+                <span>
+                  {{ combo.cantidad }} × {{ combo.nombre }}
+                  <small class="incluye">Incluye en total: {{ combo.incluye | incluyeCombo }}</small>
+                </span>
+                <span class="precio">
+                  {{ (combo.precioUnitario * combo.cantidad) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                </span>
+              </li>
+            }
+            @if (c.creditoCombos) {
+              <li>
+                <span>Entradas incluidas en combos</span>
+                <span class="precio">
+                  − {{ c.creditoCombos | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+                </span>
+              </li>
+            }
+          </ul>
+        }
 
         @if (c.productos.length > 0) {
           <p class="rotulo">Candy bar</p>

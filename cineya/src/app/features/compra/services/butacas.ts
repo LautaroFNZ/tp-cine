@@ -12,6 +12,11 @@ export interface ItemCompra {
   cantidad: number;
 }
 
+export interface ComboElegido {
+  comboId: string;
+  cantidad: number;
+}
+
 export interface CanjeElegido {
   recompensaId: string;
   cantidad: number;
@@ -119,8 +124,8 @@ export class ButacaService {
     if (error) console.error('Error al liberar la reserva', error);
   }
 
-  // Convierte la reserva en compra, con los productos, el cupón, los canjes con puntos
-  // y, si el usuario lo decidió, su crédito. Devuelve el código de la compra.
+  // Convierte la reserva en compra, con los productos, el cupón, los canjes con puntos,
+  // el crédito (si el usuario lo decidió) y los combos. Devuelve el código de la compra.
   async comprar(
     funcionId: string,
     butacaIds: string[],
@@ -128,7 +133,8 @@ export class ButacaService {
     metodoPago: 'card' | 'wallet',
     cupon: string | null = null,
     canjes: CanjeElegido[] = [],
-    usarCredito = false
+    usarCredito = false,
+    combos: ComboElegido[] = []
   ): Promise<ResultadoCompra> {
     const { data: filas, error } = await this.supabase.client.rpc('complete_purchase', {
       p_showtime_id: funcionId,
@@ -138,7 +144,8 @@ export class ButacaService {
       p_payment_method: metodoPago,
       p_coupon_code: cupon,
       p_rewards: canjes.map(canje => ({ reward_id: canje.recompensaId, quantity: canje.cantidad })),
-      p_use_credit: usarCredito
+      p_use_credit: usarCredito,
+      p_combos: combos.map(combo => ({ combo_id: combo.comboId, quantity: combo.cantidad }))
     });
 
     if (error) this.lanzarError(error.message);
@@ -201,6 +208,8 @@ export class ButacaService {
     if (mensaje.includes('age_restricted')) throw new Error('EDAD_NO_PERMITIDA');
     if (mensaje.includes('login_required')) throw new Error('SESION_REQUERIDA');
     if (mensaje.includes('hold_expired')) throw new Error('RESERVA_VENCIDA');
+    if (mensaje.includes('combo_unavailable')) throw new Error('COMBO_NO_DISPONIBLE');
+    if (mensaje.includes('combo_exceeds_seats')) throw new Error('COMBO_EXCEDE');
     console.error('Error en la compra', mensaje);
     throw new Error(mensaje);
   }

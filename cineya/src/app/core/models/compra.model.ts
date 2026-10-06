@@ -15,6 +15,13 @@ export interface ProductoCompra {
   puntos?: number;
 }
 
+export interface ComboCompra {
+  nombre: string;
+  cantidad: number;
+  precioUnitario: number;
+  incluye: { nombre: string; cantidad: number }[];
+}
+
 export interface Compra {
   id: string;
   codigo: string;
@@ -30,12 +37,14 @@ export interface Compra {
   fin: string;
   entradas: EntradaCompra[];
   productos: ProductoCompra[];
+  combos?: ComboCompra[];
   entradaUsada?: boolean;
   candyEntregado?: boolean;
   subtotal?: number;
   descuento?: number;
   descuentoEtiqueta?: string | null;
   creditoPuntos?: number;
+  creditoCombos?: number;
   puntosGanados?: number;
   cancelada?: boolean;
   creditoUsado?: number;

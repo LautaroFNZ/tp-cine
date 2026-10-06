@@ -63,10 +63,7 @@ export class PasoPago implements OnInit {
   puntosDisponibles = computed(() => this.saldo() - this.puntosUsados());
 
   // Entradas (butacas) que todavía no se canjearon con puntos
-  entradasSinCanjear = computed(() => {
-    const estado = this.estado();
-    return estado.butacas.length - this.carrito.entradasCanjeadas(estado);
-  });
+  entradasSinCanjear = computed(() => this.carrito.entradasLibres(this.estado()));
 
   // 1 punto por cada peso que se paga
   puntosAGanar = computed(() => Math.max(0, Math.floor(this.carrito.total(this.estado()))));
@@ -191,7 +188,8 @@ export class PasoPago implements OnInit {
         this.metodo(),
         this.cuponValidado(),
         estado.canjes.map(item => ({ recompensaId: item.recompensa.id, cantidad: item.cantidad })),
-        estado.credito.usar
+        estado.credito.usar,
+        estado.combos.map(item => ({ comboId: item.combo.id, cantidad: item.cantidad }))
       );
 
       this.totalCompra.set(total);
@@ -208,7 +206,9 @@ export class PasoPago implements OnInit {
         PUNTOS_INSUFICIENTES: 'No te alcanzan los puntos para los canjes elegidos.',
         CANJE_NO_DISPONIBLE: 'Alguna de las recompensas ya no está disponible. Revisá tus canjes.',
         CANJE_EXCEDE: 'Elegiste más entradas gratis que butacas.',
-        CANJE_SESION: 'Iniciá sesión para canjear puntos.'
+        CANJE_SESION: 'Iniciá sesión para canjear puntos.',
+        COMBO_NO_DISPONIBLE: 'Alguno de los combos ya no está disponible. Volvé al candy bar y revisá tu elección.',
+        COMBO_EXCEDE: 'Hay más combos y entradas gratis que butacas. Revisá tu elección.',
       };
       if (mensaje.startsWith('CUPON_')) {
         this.mensajeError.set(this.textoErrorCupon(mensaje));

@@ -66,6 +66,18 @@
           }
         </ul>
 
+        @if (c.combos && c.combos.length > 0) {
+          <p class="rotulo">Combos</p>
+          <ul>
+            @for (combo of c.combos; track $index) {
+              <li>
+                {{ combo.cantidad }} × {{ combo.nombre }}
+                <small class="incluye">Entregar: {{ combo.incluye | incluyeCombo }}</small>
+              </li>
+            }
+          </ul>
+        }
+
         @if (c.productos.length > 0) {
           <p class="rotulo">Candy bar</p>
           <ul>
@@ -73,7 +85,8 @@
               <li>{{ producto.cantidad }} × {{ producto.nombre }}</li>
             }
           </ul>
-        }
+        }  
+      
       </div>
 
       <div class="acciones">
@@ -86,7 +99,7 @@
           </button>
         </div>
 
-        @if (c.productos.length > 0) {
+        @if (tieneCandy()) {
           <div class="bloque-accion">
             <span class="estado" [class.usada]="c.candyEntregado">
               {{ c.candyEntregado ? 'Candy retirado' : 'Candy pendiente' }}

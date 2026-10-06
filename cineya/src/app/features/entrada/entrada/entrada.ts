@@ -4,13 +4,14 @@ import localeEsAr from '@angular/common/locales/es-AR';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EntradaService } from '../services/entradas';
 import { Compra } from '../../../core/models/compra.model';
+import { IncluyeComboPipe } from '../../../shared/pipes/incluye-combo-pipe';
 import { descargarPdfEntrada } from '../../../shared/utils/pdf-entrada';
 
 registerLocaleData(localeEsAr);
 
 @Component({
   selector: 'app-entrada',
-  imports: [CurrencyPipe, DatePipe, RouterLink],
+  imports: [CurrencyPipe, DatePipe, RouterLink, IncluyeComboPipe],
   templateUrl: './entrada.html',
   styleUrl: './entrada.scss'
 })
@@ -31,9 +32,16 @@ export class Entrada implements OnInit {
     return clasificacion && clasificacion !== 'none' ? Number(clasificacion) : 0;
   });
 
-    funcionFinalizada = computed(() => {
+  // La función ya terminó (la entrada y el candy ya no se pueden usar)
+  funcionFinalizada = computed(() => {
     const compra = this.compra();
     return compra ? Date.parse(compra.fin) < Date.now() : false;
+  });
+
+  // ¿La compra tiene algo para retirar en el candy bar? (productos sueltos o combos)
+  tieneCandy = computed(() => {
+    const compra = this.compra();
+    return !!compra && (compra.productos.length > 0 || (compra.combos?.length ?? 0) > 0);
   });
 
   // El código se muestra en dos grupos para leerlo mejor

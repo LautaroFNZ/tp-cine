@@ -41,14 +41,24 @@ export class EntradaService {
         precioUnitario: Number(item.unit_price),
         puntos: Number(item.points ?? 0)
       })),
+      combos: (data.combos ?? []).map((combo: any) => ({
+        nombre: combo.name,
+        cantidad: combo.quantity,
+        precioUnitario: Number(combo.unit_price),
+        incluye: (combo.includes ?? []).map((item: any) => ({
+          nombre: item.name,
+          cantidad: item.quantity
+        }))
+      })),
       entradaUsada: data.entry_used,
       candyEntregado: data.candy_delivered,
       subtotal: Number(data.subtotal),
       descuento: Number(data.discount_amount),
       descuentoEtiqueta: data.discount_label,
       creditoPuntos: Number(data.reward_credit ?? 0),
+      creditoCombos: Number(data.combo_credit ?? 0),
       creditoUsado: Number(data.credit_used ?? 0),
-      cancelada: data.status === 'cancelled',
+      cancelada: data.status === 'cancelled'
     };
   }
 

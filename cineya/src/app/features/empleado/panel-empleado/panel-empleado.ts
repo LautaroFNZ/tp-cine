@@ -5,12 +5,13 @@ import { EntradaService } from '../../entrada/services/entradas';
 import { ValidacionService } from '../services/validacion';
 import { LectorQr } from '../lector-qr/lector-qr';
 import { Compra } from '../../../core/models/compra.model';
+import { IncluyeComboPipe } from '../../../shared/pipes/incluye-combo-pipe';
 
 registerLocaleData(localeEsAr);
 
 @Component({
   selector: 'app-panel-empleado',
-  imports: [DatePipe, LectorQr],
+  imports: [DatePipe, LectorQr, IncluyeComboPipe],
   templateUrl: './panel-empleado.html',
   styleUrl: './panel-empleado.scss'
 })
@@ -30,6 +31,12 @@ export class PanelEmpleado {
   edadMinima = computed(() => {
     const clasificacion = this.compra()?.clasificacionEdad;
     return clasificacion && clasificacion !== 'none' ? Number(clasificacion) : 0;
+  });
+
+  // ¿La compra tiene algo para entregar en el candy bar? (productos sueltos o combos)
+  tieneCandy = computed(() => {
+    const compra = this.compra();
+    return !!compra && (compra.productos.length > 0 || (compra.combos?.length ?? 0) > 0);
   });
 
     // 'antes': la función es otro día · 'hoy': se puede validar · 'terminada': la función ya terminó

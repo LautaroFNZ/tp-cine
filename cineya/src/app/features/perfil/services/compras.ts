@@ -18,6 +18,7 @@ export class CompraService {
         descuento:discount_amount,
         descuentoEtiqueta:discount_label,
         creditoPuntos:reward_credit,
+        creditoCombos:combo_credit,
         puntosGanados:points_earned,
         creditoUsado:credit_used,
         creditoDevuelto:credit_refunded,
@@ -41,7 +42,14 @@ export class CompraService {
           cantidad:quantity,
           precioUnitario:unit_price,
           puntos:points_spent,
+          comboId:purchase_combo_id,
           producto:products(name)
+        ),
+        combos:purchase_combos(
+          nombre:name,
+          cantidad:quantity,
+          precioUnitario:unit_price,
+          componentes:purchase_items(cantidad:quantity, producto:products(name))
         )
       `)
       .eq('user_id', usuarioId)
@@ -66,6 +74,7 @@ export class CompraService {
           descuento: Number(fila.descuento ?? 0),
           descuentoEtiqueta: fila.descuentoEtiqueta,
           creditoPuntos: Number(fila.creditoPuntos ?? 0),
+          creditoCombos: Number(fila.creditoCombos ?? 0),
           puntosGanados: Number(fila.puntosGanados ?? 0),
           creditoUsado: Number(fila.creditoUsado ?? 0),
           creditoDevuelto: Number(fila.creditoDevuelto ?? 0),
@@ -89,11 +98,23 @@ export class CompraService {
               precio: Number(entrada.precio)
             }))
             .sort((a: any, b: any) => a.fila.localeCompare(b.fila) || a.numero - b.numero),
-          productos: (fila.productos ?? []).map((item: any) => ({
-            nombre: item.producto?.name ?? 'Producto',
-            cantidad: item.cantidad,
-            precioUnitario: Number(item.precioUnitario),
-            puntos: Number(item.puntos ?? 0)
+          // Los productos de un combo se muestran dentro de su combo, no sueltos
+          productos: (fila.productos ?? [])
+            .filter((item: any) => item.comboId === null)
+            .map((item: any) => ({
+              nombre: item.producto?.name ?? 'Producto',
+              cantidad: item.cantidad,
+              precioUnitario: Number(item.precioUnitario),
+              puntos: Number(item.puntos ?? 0)
+            })),
+          combos: (fila.combos ?? []).map((combo: any) => ({
+            nombre: combo.nombre,
+            cantidad: combo.cantidad,
+            precioUnitario: Number(combo.precioUnitario),
+            incluye: (combo.componentes ?? []).map((componente: any) => ({
+              nombre: componente.producto?.name ?? 'Producto',
+              cantidad: componente.cantidad
+            }))
           }))
         };
       });

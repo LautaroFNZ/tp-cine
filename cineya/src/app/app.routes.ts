@@ -118,7 +118,12 @@ export const routes: Routes = [
         path: 'puntos',
         loadComponent: () =>
           import('./features/admin/puntos-admin/puntos-admin').then(m => m.PuntosAdmin)
-      }  
+      },
+      {
+        path: 'combos',
+        loadComponent: () =>
+          import('./features/admin/combos-admin/combos-admin').then(m => m.CombosAdmin)
+      },  
     ]
   },
   {

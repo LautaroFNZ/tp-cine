@@ -163,3 +163,9 @@ li {
     grid-template-columns: 1fr;
   }
 }
+
+small.incluye {
+  display: block;
+  color: var(--color-texto-suave);
+  font-size: 0.78rem;
+}

@@ -95,6 +95,38 @@ export function construirPdfEntrada(doc: jsPDF, compra: Compra, qr: string): jsP
     y += 6.5;
   }
 
+    // Combos
+  if (compra.combos && compra.combos.length > 0) {
+    y += 3;
+    y = seccion(doc, 'COMBOS', y, margen, derecha);
+    for (const combo of compra.combos) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      doc.setTextColor(...NEGRO);
+      doc.text(`${combo.cantidad} x ${combo.nombre}`, margen, y);
+      doc.setTextColor(...GRIS);
+      doc.text(moneda(combo.precioUnitario * combo.cantidad), derecha, y, { align: 'right' });
+      y += 5.5;
+
+      // Qué trae el combo, en letra más chica (puede ocupar más de un renglón)
+      doc.setFontSize(9);
+      const detalle = doc.splitTextToSize(
+        `Incluye en total: ${combo.incluye.map(item => `${item.cantidad} x ${item.nombre}`).join(', ')}`,
+        ancho - margen * 2 - 4
+      ) as string[];
+      doc.text(detalle, margen + 4, y);
+      y += detalle.length * 4.2 + 2.5;
+    }
+    if (compra.creditoCombos && compra.creditoCombos > 0) {
+      doc.setFontSize(11);
+      doc.setTextColor(...NEGRO);
+      doc.text('Entradas incluidas en combos', margen, y);
+      doc.setTextColor(...GRIS);
+      doc.text(`- ${moneda(compra.creditoCombos)}`, derecha, y, { align: 'right' });
+      y += 6.5;
+    }
+  }
+
   // Candy bar
   if (compra.productos.length > 0) {
     y += 3;
@@ -141,12 +173,14 @@ export function construirPdfEntrada(doc: jsPDF, compra: Compra, qr: string): jsP
   doc.text(moneda(compra.total), derecha, y, { align: 'right' });
   y += 12;
 
-  // Código QR (si no entra en la hoja, pasa a la siguiente)
-  const tamanoQr = 56;
-  if (y + tamanoQr + 30 > 285) {
+  // Código QR: se achica si hay mucho contenido y, si ni así entra, pasa a la hoja siguiente
+  let tamanoQr = Math.min(56, 276 - y - 18);
+  if (tamanoQr < 40) {
     doc.addPage();
     y = 30;
+    tamanoQr = 56;
   }
+  
   doc.addImage(qr, 'PNG', (ancho - tamanoQr) / 2, y, tamanoQr, tamanoQr);
   y += tamanoQr + 9;
 

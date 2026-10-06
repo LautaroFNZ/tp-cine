@@ -7,6 +7,7 @@ import { CreditoService } from '../../../core/services/credito';
 import { CompraService } from '../services/compras';
 import { Compra } from '../../../core/models/compra.model';
 import { DialogoAviso } from '../../../shared/components/dialogo-aviso/dialogo-aviso';
+import { IncluyeComboPipe } from '../../../shared/pipes/incluye-combo-pipe';
 
 registerLocaleData(localeEsAr);
 
@@ -17,7 +18,7 @@ const MARGEN_CANCELACION = 2 * 60 * 60 * 1000;
 
 @Component({
   selector: 'app-cuenta-compras',
-  imports: [CurrencyPipe, DatePipe, NgTemplateOutlet, RouterLink, DialogoAviso],
+  imports: [CurrencyPipe, DatePipe, NgTemplateOutlet, RouterLink, DialogoAviso, IncluyeComboPipe],
   templateUrl: './cuenta-compras.html',
   styleUrl: './cuenta-compras.scss'
 })
@@ -77,6 +78,11 @@ export class CuentaCompras implements OnInit {
   // Los productos del candy tienen su propio estado, porque se retiran por separado
   candyPendiente(compra: Compra): boolean {
     return !compra.cancelada && !compra.candyEntregado && Date.parse(compra.fin) > Date.now();
+  }
+
+  // ¿La compra tiene algo para retirar en el candy bar? (productos sueltos o combos)
+  tieneCandy(compra: Compra): boolean {
+    return compra.productos.length > 0 || (compra.combos?.length ?? 0) > 0;
   }
 
   textoCandy(compra: Compra): string {

@@ -2,7 +2,7 @@
   <h2>Tu compra</h2>
 
   @if (carrito$ | async; as estado) {
-    @if (estado.butacas.length === 0 && estado.items.length === 0) {
+    @if (estado.butacas.length === 0 && estado.items.length === 0 && estado.combos.length === 0) {
       <p class="aviso">Todavía no elegiste nada.</p>
     } @else {
       @if (estado.butacas.length > 0) {
@@ -21,6 +21,26 @@
               </span>
             </li>
           }
+        </ul>
+      }
+
+      @if (estado.combos.length > 0) {
+        <h3 class="subtitulo">Combos</h3>
+        <ul>
+          @for (item of estado.combos; track item.combo.id) {
+            <li>
+              <span>{{ item.cantidad }} × {{ item.combo.nombre }}</span>
+              <span class="precio">
+                {{ (item.combo.precio * item.cantidad) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+              </span>
+            </li>
+          }
+          <li>
+            <span>Entradas incluidas en combos</span>
+            <span class="precio">
+              − {{ carrito.creditoCombos(estado) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+            </span>
+          </li>
         </ul>
       }
 

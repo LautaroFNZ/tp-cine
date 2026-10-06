@@ -20,7 +20,7 @@
       </div>
       <div class="estados">
         <span class="estado" [class.vigente]="estado === 'vigente'">{{ textoEstado(estado) }}</span>
-        @if (compra.productos.length > 0 && estado !== 'cancelada') {
+        @if (tieneCandy(compra) && estado !== 'cancelada') {
           <span class="estado" [class.vigente]="candyPendiente(compra)">{{ textoCandy(compra) }}</span>
         }
       </div>
@@ -51,6 +51,31 @@
           </li>
         }
       </ul>
+
+      @if (compra.combos && compra.combos.length > 0) {
+        <p class="rotulo">Combos</p>
+        <ul>
+          @for (combo of compra.combos; track $index) {
+            <li>
+              <span>
+                {{ combo.cantidad }} × {{ combo.nombre }}
+                <small class="incluye">Incluye en total: {{ combo.incluye | incluyeCombo }}</small>
+              </span>
+              <span class="precio">
+                {{ (combo.precioUnitario * combo.cantidad) | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+              </span>
+            </li>
+          }
+          @if (compra.creditoCombos) {
+            <li>
+              <span>Entradas incluidas en combos</span>
+              <span class="precio">
+                − {{ compra.creditoCombos | currency: 'ARS' : 'symbol-narrow' : '1.0-0' : 'es-AR' }}
+              </span>
+            </li>
+          }
+        </ul>
+      }
 
       @if (compra.productos.length > 0) {
         <p class="rotulo">Candy bar</p>
