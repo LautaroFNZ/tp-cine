@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ValidacionService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   // Marca la entrada como utilizada. Después de esto, el código ya no sirve para entrar.
   async validarEntrada(codigo: string): Promise<void> {

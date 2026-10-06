@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Pelicula } from '../../../core/models/pelicula.model';
 import { Genero } from '../../../core/models/genero.model';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class MovieService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
     async obtenerPeliculas(): Promise<Pelicula[]> {
     const { data, error } = await this.supabase.client

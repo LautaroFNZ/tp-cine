@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Cupon } from '../../../core/models/cupon.model';
 
@@ -8,9 +8,9 @@ export interface DatosCrearCupon {
   edadMinima: number | null;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CuponAdminService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   async obtenerDescuentoBienvenida(): Promise<number> {
     const { data, error } = await this.supabase.client

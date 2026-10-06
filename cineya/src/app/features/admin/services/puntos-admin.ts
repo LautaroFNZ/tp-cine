@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 
 export interface RecompensaAdmin {
@@ -9,9 +9,9 @@ export interface RecompensaAdmin {
   activa: boolean;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PuntosAdminService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   // Todas las recompensas, incluidas las desactivadas
   async listarRecompensas(): Promise<RecompensaAdmin[]> {

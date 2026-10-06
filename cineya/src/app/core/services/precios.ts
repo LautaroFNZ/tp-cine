@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { ConfiguracionPrecios, PreciosFuncion } from '../models/precios.model';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PrecioService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   // Precios que rigen para una función (considera la preventa de la película)
   async obtenerPreciosFuncion(funcionId: string): Promise<PreciosFuncion | null> {

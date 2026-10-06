@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Compra } from '../../../core/models/compra.model';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class EntradaService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   // Devuelve null si no existe una compra con ese código
   async obtenerPorCodigo(codigo: string): Promise<Compra | null> {

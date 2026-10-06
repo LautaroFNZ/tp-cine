@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { ClasificacionEdad, Pelicula } from '../../../core/models/pelicula.model';
 import { Genero } from '../../../core/models/genero.model';
@@ -14,9 +14,9 @@ export interface DatosGuardarPelicula {
   finPreventa: string | null;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PeliculaAdminService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   // Todas las películas, incluidas las ocultas
   async listar(): Promise<Pelicula[]> {

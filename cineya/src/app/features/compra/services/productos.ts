@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Producto } from '../../../core/models/producto.model';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ProductoService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   // El público solo ve los productos disponibles (lo garantiza RLS)
   async listarDisponibles(): Promise<Producto[]> {

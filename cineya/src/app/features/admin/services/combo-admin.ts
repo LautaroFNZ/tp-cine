@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Combo } from '../../../core/models/combo.model';
 
@@ -11,9 +11,9 @@ export interface DatosGuardarCombo {
   incluye: { productoId: string; cantidad: number }[];
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ComboAdminService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   // Todos los combos, incluidos los ocultos
   async listar(): Promise<Combo[]> {

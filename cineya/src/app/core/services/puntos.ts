@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { MovimientoPuntos, Recompensa } from '../models/recompensa.model';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PuntosService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   // Saldo del usuario con sesión: es la suma de sus movimientos de puntos
   async obtenerSaldo(): Promise<number> {
@@ -70,7 +70,7 @@ export class PuntosService {
 
     return (filas ?? []).map((fila: any): MovimientoPuntos => ({
       id: fila.id,
-      tipo: fila.tipo === 'earned' ? 'ganado' : fila.tipo === 'redeemed' ? 'canjeado' : 'ajuste',
+      tipo: fila.tipo === 'earned' ? 'ganado' : 'canjeado',
       puntos: fila.puntos,
       cantidad: fila.cantidad,
       descripcion: fila.descripcion,

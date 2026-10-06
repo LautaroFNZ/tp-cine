@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { MovimientoCredito } from '../models/credito.model';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CreditoService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   // Crédito del usuario con sesión: es la suma de sus movimientos
   async obtenerSaldo(): Promise<number> {

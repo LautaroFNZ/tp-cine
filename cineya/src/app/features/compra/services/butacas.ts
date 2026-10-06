@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Butaca } from '../../../core/models/butaca.model';
 
@@ -35,11 +35,11 @@ interface Escuchas {
   alConectar: () => void;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ButacaService {
   private readonly claveToken = 'cineya_token_reserva';
 
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   // Identifica a este visitante (con o sin cuenta) mientras dure la pestaña
   private get token(): string {

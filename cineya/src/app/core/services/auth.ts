@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { computed, inject, Service, signal } from '@angular/core';
 import { Session } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase.service';
 import { Perfil } from '../models/perfil.model';
@@ -14,7 +14,7 @@ export interface DatosRegistro {
   diasVacaciones: number;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AuthService {
   readonly sesion = signal<Session | null>(null);
   readonly perfil = signal<Perfil | null>(null);
@@ -28,7 +28,9 @@ export class AuthService {
   private marcarListo!: () => void;
   readonly listo = new Promise<void>(resolver => (this.marcarListo = resolver));
 
-  constructor(private supabase: SupabaseService) {
+  private supabase = inject(SupabaseService);
+
+  constructor() {
     this.supabase.client.auth.onAuthStateChange((_evento, sesion) => {
       this.sesion.set(sesion);
       // Se difiere para no hacer consultas dentro del callback de supabase-js

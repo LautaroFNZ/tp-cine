@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 
 export interface VistaDescuento {
@@ -8,9 +8,9 @@ export interface VistaDescuento {
   cuponAplicado: boolean;   // false si ganó el descuento de bienvenida
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class DescuentoService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   // Pregunta a la base qué descuento le corresponde al usuario (con o sin cupón) para un subtotal
   async calcular(cupon: string, subtotal: number): Promise<VistaDescuento> {

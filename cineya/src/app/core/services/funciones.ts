@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import {
   DatosProgramacion,
@@ -18,9 +18,9 @@ const CAMPOS_FUNCION = `
   idioma:language
 `;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class FuncionService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   async obtenerProximasPorPelicula(peliculaId: string): Promise<Funcion[]> {
     const { data: funciones, error } = await this.supabase.client
@@ -84,26 +84,26 @@ export class FuncionService {
     }
   }
 
-   async obtenerPorId(id: string): Promise<Funcion | null> {
+  async obtenerPorId(id: string): Promise<Funcion | null> {
     const { data: funcion, error } = await this.supabase.client
-        .from('showtimes')
-        .select(CAMPOS_FUNCION)
-        .eq('id', id)
-        .single();
+      .from('showtimes')
+      .select(CAMPOS_FUNCION)
+      .eq('id', id)
+      .single();
 
     if (error) {
-        console.error('Error al obtener la función', error);
-        return null;
+      console.error('Error al obtener la función', error);
+      return null;
     }
     return this.convertir([funcion])[0];
-    }
+  }
 
-    private convertir(filas: any[] | null): Funcion[] {
-        return (filas ?? []).map((fila: any) => ({
-            ...fila,
-            sala: fila.sala?.name ?? '',
-            clasificacionEdad: fila.pelicula?.clasificacionEdad ?? 'none',
-            pelicula: fila.pelicula?.title ?? ''
-        }));
-    }
+  private convertir(filas: any[] | null): Funcion[] {
+    return (filas ?? []).map((fila: any) => ({
+      ...fila,
+      sala: fila.sala?.name ?? '',
+      clasificacionEdad: fila.pelicula?.clasificacionEdad ?? 'none',
+      pelicula: fila.pelicula?.title ?? ''
+    }));
+  }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { CategoriaProducto, Producto } from '../../../core/models/producto.model';
 
@@ -10,9 +10,9 @@ export interface DatosGuardarProducto {
   imagenUrl: string | null;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CandyAdminService {
-  constructor(private supabase: SupabaseService) {}
+  private supabase = inject(SupabaseService);
 
   async listarCategorias(): Promise<CategoriaProducto[]> {
     const { data: categorias, error } = await this.supabase.client
